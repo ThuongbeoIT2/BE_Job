@@ -12,6 +12,8 @@ public class HotJobTmApplication {
     public static void main(String[] args) {
         SpringApplication.run(HotJobTmApplication.class, args);
         System.out.println("hello");
+        //        "C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-web-security --disable-gpu --user-data-dir=%LOCALAPPDATA%\Google\chromeTemp"
+
     }
 
 }

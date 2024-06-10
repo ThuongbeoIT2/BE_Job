@@ -1,5 +1,6 @@
 package com.example.oauth2.security.oauth2.user;
 
+
 import java.util.Map;
 
 public abstract class OAuth2UserInfo {
@@ -20,4 +21,5 @@ public abstract class OAuth2UserInfo {
     public abstract String getEmail();
 
     public abstract String getImageUrl();
+
 }

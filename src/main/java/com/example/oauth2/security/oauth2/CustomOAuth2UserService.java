@@ -2,6 +2,7 @@ package com.example.oauth2.security.oauth2;
 
 import com.example.oauth2.exception.OAuth2AuthenticationProcessingException;
 import com.example.oauth2.model.AuthProvider;
+import com.example.oauth2.model.Role;
 import com.example.oauth2.model.User;
 import com.example.oauth2.repository.UserRepository;
 import com.example.oauth2.security.UserPrincipal;
@@ -17,6 +18,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -69,6 +71,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setName(oAuth2UserInfo.getName());
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
+        user.setRoles(Collections.singleton(Role.ROLE_USER));
         return userRepository.save(user);
     }
 

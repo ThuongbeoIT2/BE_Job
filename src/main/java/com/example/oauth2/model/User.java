@@ -1,12 +1,15 @@
 package com.example.oauth2.model;
 
 
+import com.example.oauth2.notify.Notify;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -31,8 +34,13 @@ public class User {
 
     @JsonIgnore
     private String password;
-
-
+    @OneToMany(mappedBy = "user")
+    private List<Notify> notifies;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Set<Role> roles;
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
@@ -103,5 +111,19 @@ public class User {
         this.providerId = providerId;
     }
 
+    public Set<Role> getRoles() {
+        return roles;
+    }
 
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public List<Notify> getNotifies() {
+        return notifies;
+    }
+
+    public void setNotifies(List<Notify> notifies) {
+        this.notifies = notifies;
+    }
 }

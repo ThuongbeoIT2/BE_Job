@@ -1,5 +1,7 @@
 package com.example.oauth2.security.oauth2.user;
 
+
+
 import java.util.Map;
 
 public class FacebookOAuth2UserInfo extends OAuth2UserInfo {

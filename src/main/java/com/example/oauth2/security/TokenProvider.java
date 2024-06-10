@@ -2,6 +2,7 @@ package com.example.oauth2.security;
 
 
 import com.example.oauth2.config.AppProperties;
+
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,5 +63,6 @@ public class TokenProvider {
         }
         return false;
     }
+
 
 }

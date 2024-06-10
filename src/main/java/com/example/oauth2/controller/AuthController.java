@@ -2,6 +2,7 @@ package com.example.oauth2.controller;
 
 import com.example.oauth2.exception.BadRequestException;
 import com.example.oauth2.model.AuthProvider;
+import com.example.oauth2.model.Role;
 import com.example.oauth2.model.User;
 import com.example.oauth2.payload.ApiResponse;
 import com.example.oauth2.payload.AuthResponse;
@@ -9,6 +10,9 @@ import com.example.oauth2.payload.LoginRequest;
 import com.example.oauth2.payload.SignUpRequest;
 import com.example.oauth2.repository.UserRepository;
 import com.example.oauth2.security.TokenProvider;
+
+import com.example.oauth2.token.TokenService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,11 +25,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
-@RequestMapping("/auth")
 public class AuthController {
-
+    @Autowired
+    private TokenService tokenService;
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -38,23 +44,29 @@ public class AuthController {
     @Autowired
     private TokenProvider tokenProvider;
 
-    @PostMapping("/login")
+    @GetMapping (value = "/validtoken")
+    public ResponseEntity<Boolean> LoginOauth2Success(@RequestParam("token") String token){
+        if (tokenService.isTokenValid(token)){
+            return  ResponseEntity.ok(true);
+        }
+        return  ResponseEntity.ok(false);
+    }
+    @PostMapping("/auth/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         String token = tokenProvider.createToken(authentication);
+        User user = userRepository.findByEmail(authentication.getName()).get();
+        tokenService.saveUserToken(user,token);
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if(userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("Email address already in use.");
@@ -65,7 +77,9 @@ public class AuthController {
         user.setPassword(signUpRequest.getPassword());
         user.setProvider(AuthProvider.local);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
+        Set<Role> roleSet= new HashSet<>();
+        roleSet.add(Role.ROLE_USER);
+        user.setRoles(roleSet);
         User result = userRepository.save(user);
 
         URI location = ServletUriComponentsBuilder
@@ -75,5 +89,4 @@ public class AuthController {
         return ResponseEntity.created(location)
                 .body(new ApiResponse(true, "User registered successfully@",""));
     }
-
 }
