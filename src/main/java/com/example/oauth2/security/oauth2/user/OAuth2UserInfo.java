@@ -3,6 +3,7 @@ package com.example.oauth2.security.oauth2.user;
 
 import java.util.Map;
 
+
 public abstract class OAuth2UserInfo {
     protected Map<String, Object> attributes;
 

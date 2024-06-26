@@ -113,9 +113,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.jpg",
                         "/**/*.html",
                         "/**/*.css",
-                        "/**/*.js")
+                        "/**/*.js",
+                        "/ws/**")
                 .permitAll()
-                .antMatchers("/auth/**", "/oauth2/**","/validtoken")
+                .antMatchers("/auth/**", "/oauth2/**","/validtoken","/notifications/**","/chat-socket/**"
+                )
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -135,7 +137,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(oAuth2AuthenticationFailureHandler)
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .logout(logout -> logout.logoutUrl("/api/v1/auth/logout").addLogoutHandler(logoutHandler)
+                .logout(logout -> logout.logoutUrl("/auth/logout").addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
 
 

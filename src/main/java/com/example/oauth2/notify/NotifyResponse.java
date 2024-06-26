@@ -1,29 +1,22 @@
 package com.example.oauth2.notify;
 
-import com.example.oauth2.model.User;
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
-@Entity(name = "notify")
-@Table(name = "notify")
-public class Notify {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class NotifyResponse {
+
     private int notiId;
-
-    @Column(nullable = false, name = "description")
-    @NotBlank
     private String description;
-
-    @Column(name = "notiStatus")
     private boolean notiStatus;
-
-    @Column(name = "deletedNoti")
     private boolean deletedNoti;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userID", foreignKey = @ForeignKey(name = "fk_user_notify"))
-    private User user;
+
+    public NotifyResponse(int notiId, String description, boolean notiStatus, boolean deletedNoti) {
+        this.notiId = notiId;
+        this.description = description;
+        this.notiStatus = notiStatus;
+        this.deletedNoti = deletedNoti;
+    }
+
+    // Getters and setters
 
     public int getNotiId() {
         return notiId;
@@ -57,11 +50,4 @@ public class Notify {
         this.deletedNoti = deletedNoti;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

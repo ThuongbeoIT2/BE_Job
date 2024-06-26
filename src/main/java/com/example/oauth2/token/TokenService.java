@@ -43,4 +43,9 @@ public class TokenService {
 
         return true;
     }
+
+    public boolean validateToken(String token) {
+
+        return true;
+    }
 }
