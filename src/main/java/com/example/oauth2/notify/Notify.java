@@ -1,9 +1,17 @@
 package com.example.oauth2.notify;
 
 import com.example.oauth2.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "notify")
 @Table(name = "notify")
 public class Notify {
@@ -25,43 +33,5 @@ public class Notify {
     @JoinColumn(name = "userID", foreignKey = @ForeignKey(name = "fk_user_notify"))
     private User user;
 
-    public int getNotiId() {
-        return notiId;
-    }
 
-    public void setNotiId(int notiId) {
-        this.notiId = notiId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isNotiStatus() {
-        return notiStatus;
-    }
-
-    public void setNotiStatus(boolean notiStatus) {
-        this.notiStatus = notiStatus;
-    }
-
-    public boolean isDeletedNoti() {
-        return deletedNoti;
-    }
-
-    public void setDeletedNoti(boolean deletedNoti) {
-        this.deletedNoti = deletedNoti;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

@@ -6,8 +6,8 @@ import com.example.oauth2.model.Role;
 import com.example.oauth2.model.User;
 import com.example.oauth2.payload.ApiResponse;
 import com.example.oauth2.payload.AuthResponse;
-import com.example.oauth2.payload.LoginRequest;
-import com.example.oauth2.payload.SignUpRequest;
+import com.example.oauth2.payload.request.LoginRequest;
+import com.example.oauth2.payload.request.SignUpRequest;
 import com.example.oauth2.repository.UserRepository;
 import com.example.oauth2.security.TokenProvider;
 

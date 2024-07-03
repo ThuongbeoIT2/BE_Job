@@ -116,7 +116,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js",
                         "/ws/**")
                 .permitAll()
-                .antMatchers("/auth/**", "/oauth2/**","/validtoken","/notifications/**","/chat-socket/**"
+                .antMatchers("/auth/**", "/oauth2/**","/validtoken"
                 )
                 .permitAll()
                 .anyRequest()
@@ -139,9 +139,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .logout(logout -> logout.logoutUrl("/auth/logout").addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
-
-
-
 
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
