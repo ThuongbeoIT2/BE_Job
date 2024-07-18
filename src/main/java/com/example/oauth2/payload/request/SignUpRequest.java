@@ -1,5 +1,6 @@
 package com.example.oauth2.payload.request;
 
+import com.nimbusds.openid.connect.sdk.claims.Gender;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -10,7 +11,6 @@ import javax.validation.constraints.NotBlank;
 public class SignUpRequest {
     @NotBlank
     private String name;
-
     @NotBlank
     @Email
     private String email;

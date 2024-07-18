@@ -1,13 +1,5 @@
 package com.example.oauth2.config;
-
-
-
-
-
-
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.util.ArrayList;
 import java.util.List;
 @ConfigurationProperties(prefix = "app")

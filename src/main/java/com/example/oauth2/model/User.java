@@ -3,7 +3,7 @@ package com.example.oauth2.model;
 
 import com.example.oauth2.notify.Notify;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.nimbusds.openid.connect.sdk.claims.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +40,6 @@ public class User {
 
     @Column(nullable = false)
     private Boolean emailVerified = false;
-
     @JsonIgnore
     private String password;
     @OneToMany(mappedBy = "user")
