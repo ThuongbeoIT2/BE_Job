@@ -21,7 +21,7 @@ public class StoreType {
     private String typeName;
     private String slug;
     private String description;
-    private String thumnail;
+    private String thumbnail;
 
     @OneToMany
     @JsonManagedReference

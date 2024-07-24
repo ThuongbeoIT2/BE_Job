@@ -29,9 +29,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, IOException {
         try {
-            if (request.getServletPath().contains("/auth") || request.getServletPath().contains("/validtoken")|| request.getServletPath().contains("/storetype")) {
+            if (request.getServletPath().contains("/auth")) {
                 filterChain.doFilter(request, response);
-                System.out.println("Qua Header");
                 return;
             }
             String jwt = getJwtFromRequest(request);

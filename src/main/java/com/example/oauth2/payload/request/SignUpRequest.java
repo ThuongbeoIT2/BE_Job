@@ -1,6 +1,5 @@
 package com.example.oauth2.payload.request;
 
-import com.nimbusds.openid.connect.sdk.claims.Gender;
 import lombok.Data;
 
 import javax.validation.constraints.Email;

@@ -22,7 +22,7 @@ public class Store {
     private Long storeId;
     @Column(columnDefinition = "BINARY(16)", updatable = false, nullable = false)
     private UUID storeCode;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String storeName;
     @Column(nullable = false)
     private String address;
@@ -32,12 +32,14 @@ public class Store {
     @Digits(integer = 10, fraction = 0)
     @Size(min = 10, max = 10)
     private String phoneNumber;
-    private String thumnail;
+    private String password;
+    private String thumbnail;
     private String description;
     private boolean status;
     private double evaluate;
     private Date createdAt;
     private Date updatedAt;
+    private String eKyc;
     private long view;
     @ManyToOne
     @JoinColumn(name = "store_type",foreignKey = @ForeignKey(name = "fk_store_storeType"))

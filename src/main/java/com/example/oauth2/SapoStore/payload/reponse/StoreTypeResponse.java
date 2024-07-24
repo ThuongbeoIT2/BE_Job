@@ -19,7 +19,7 @@ public class StoreTypeResponse {
         storeTypeResponse.setId(storeType.getId());
         storeTypeResponse.setSlug(storeType.getSlug());
         storeTypeResponse.setDescription(storeType.getDescription());
-        storeTypeResponse.setThumnail(storeType.getThumnail());
+        storeTypeResponse.setThumnail(storeType.getThumbnail());
         return storeTypeResponse;
     }
 }
