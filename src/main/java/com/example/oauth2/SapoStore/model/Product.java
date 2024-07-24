@@ -15,13 +15,16 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int proId;
-    @Column(unique = true)
+    @Column(nullable = false)
     private String proName;
+    @Column(unique = true)
+    private String slug;
     @Column(nullable = false)
     private String thumbnail;
     private String description;
     @ManyToOne
     @JoinColumn(name = "cateId",foreignKey = @ForeignKey(name = "fk_category_product"))
     private Category category;
+
 
 }

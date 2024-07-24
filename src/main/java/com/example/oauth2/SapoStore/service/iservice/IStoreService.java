@@ -14,9 +14,7 @@ import java.util.UUID;
 public interface IStoreService {
     Page<StoreResponse> findAll(Pageable pageable);
     Optional<Store> findStoreBystoreCode(UUID storeCode);
-
     Optional<StoreResponse> findStoreByCode(UUID storeCode);
-
     Page<StoreResponse> getStoreByType(String slug, Pageable pageable);
 
     Page<StoreResponse> getStoreByEmailManager(String email, Pageable pageable);
@@ -27,4 +25,5 @@ public interface IStoreService {
     void update(StoreRequest storeRequest, Store store);
     void softDelete(Store store);
     void enableStatus(Store store);
+    void ACPStore(Store store);
 }

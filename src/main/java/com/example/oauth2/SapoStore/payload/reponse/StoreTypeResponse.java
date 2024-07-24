@@ -1,6 +1,7 @@
 package com.example.oauth2.SapoStore.payload.reponse;
 
 
+
 import com.example.oauth2.SapoStore.model.StoreType;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,4 +23,6 @@ public class StoreTypeResponse {
         storeTypeResponse.setThumnail(storeType.getThumbnail());
         return storeTypeResponse;
     }
+
+
 }
