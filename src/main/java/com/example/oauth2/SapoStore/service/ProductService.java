@@ -25,8 +25,8 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Optional<Product> findProductBySlug(String slug) {
-        return productRepository.findProductBySlug(slug);
+    public Optional<ProductResponse> findProductBySlug(String slug) {
+        return productRepository.findProductBySlug(slug).map(ProductResponse::cloneFromProduct);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ProductService implements IProductService {
 
     @Override
     public Page<ProductResponse> searchProductByKey(String key, Pageable pageable) {
-        return productRepository.searchStoreByKey(key, pageable).map(ProductResponse::cloneFromProduct);
+        return productRepository.searchProductByKey(key, pageable).map(ProductResponse::cloneFromProduct);
     }
 
     @Override

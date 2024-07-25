@@ -19,5 +19,5 @@ public interface ProductRepository extends JpaRepository<Product,Integer> {
     @Query("select o from Product o where o.category.slug=:slug")
     Page<Product> getProductByCategory(String slug, Pageable pageable);
     @Query("select o from Product o where o.proName like %:key%")
-    Page<Product> searchStoreByKey(String key, Pageable pageable);
+    Page<Product> searchProductByKey(String key, Pageable pageable);
 }

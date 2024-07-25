@@ -23,9 +23,6 @@ public class OrderDetail {
     @Column(nullable = false)
     private long pricetotal;
     @ManyToOne
-    @JoinColumn(name = "propertyId")
-    private PropertyProduct propertyProduct;
-    @ManyToOne
     @JoinColumn(name = "order_detail_id")
     private Cart cart;
 }

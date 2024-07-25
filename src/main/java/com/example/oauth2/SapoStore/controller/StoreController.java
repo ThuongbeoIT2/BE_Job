@@ -9,6 +9,7 @@ import com.example.oauth2.SapoStore.page.SapoPageRequest;
 import com.example.oauth2.SapoStore.payload.reponse.StoreResponse;
 import com.example.oauth2.SapoStore.payload.request.StoreRequest;
 import com.example.oauth2.SapoStore.repository.StoreTypeRepository;
+import com.example.oauth2.SapoStore.service.iservice.IProductOfStoreService;
 import com.example.oauth2.SapoStore.service.iservice.IStoreService;
 import com.example.oauth2.globalContanst.GlobalConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class StoreController {
     private Cloudinary cloudinary;
     @Autowired
     private StoreTypeRepository storeTypeRepository;
+    @Autowired
+    private IProductOfStoreService iProductOfStoreService;
 
     @GetMapping(value = "/getall")
     ResponseEntity<Page<StoreResponse>> getAllStore(@RequestParam(defaultValue = "0") int page) {
@@ -76,15 +79,16 @@ public class StoreController {
         iStoreService.insert(storeRequest);
         return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
     }
+
     @PostMapping(value = "/update/{storeCode}")
     ResponseEntity<String> updateStore(@PathVariable UUID storeCode,
                                        @RequestParam String storeName,
                                        @RequestParam String address,
                                        @RequestParam String description,
                                        @RequestParam String phoneNumber
-                                       ){
+    ) {
         Optional<Store> store = iStoreService.findStoreBystoreCode(storeCode);
-        if (store.isEmpty()){
+        if (store.isEmpty()) {
             throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORE, GlobalConstant.ErrorCode.MER404);
         }
         StoreRequest storeRequest = new StoreRequest();
@@ -92,7 +96,7 @@ public class StoreController {
         storeRequest.setAddress(address);
         storeRequest.setDescription(description);
         storeRequest.setPhoneNumber(phoneNumber);
-        iStoreService.update(storeRequest,store.get());
+        iStoreService.update(storeRequest, store.get());
         return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
     }
 
@@ -112,6 +116,7 @@ public class StoreController {
         Page<StoreResponse> storeResponses = iStoreService.getStoreByType(slug, sapoPageRequest);
         return ResponseEntity.ok(storeResponses);
     }
+
     @GetMapping(value = "/search")
     ResponseEntity<Page<StoreResponse>> getStoreByKey(@RequestParam String key, @RequestParam(defaultValue = "0") int page) {
         SapoPageRequest sapoPageRequest = new SapoPageRequest(GlobalConstant.Value.PAGELIMIT, page * GlobalConstant.Value.PAGELIMIT);

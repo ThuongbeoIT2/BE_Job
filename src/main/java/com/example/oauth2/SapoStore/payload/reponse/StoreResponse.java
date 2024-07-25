@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.UUID;
+
 @Data
 
 public class StoreResponse {
@@ -29,7 +30,8 @@ public class StoreResponse {
     private long view;
     private String StoreType;
     private int urlIntroduce;
-    public static StoreResponse cloneFromStore(Store store){
+
+    public static StoreResponse cloneFromStore(Store store) {
         StoreResponse storeResponse = new StoreResponse();
         storeResponse.setStoreId(store.getStoreId());
         storeResponse.setStoreCode(store.getStoreCode());
