@@ -4,6 +4,7 @@ public class GlobalConstant {
     public static class ObjectClass{
         public static final String CATEGORY = "Category";
         public static final String INTRODUCE = "StoreIntroduce";
+        public static final String PRODUCTOS = "ProductOfStore";
         public static String PAYMENTMETHOD =" PaymentMethod";
         public static String STORETYPE =" StoreType";
         public static String STORE =" Store";

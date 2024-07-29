@@ -36,7 +36,7 @@ public class ProductController {
         return ResponseEntity.ok(productResponses);
     }
     @GetMapping(value = "/view/{slug}")
-    ResponseEntity<ProductResponse> viewStore(@PathVariable String slug) {
+    ResponseEntity<ProductResponse> viewProduct(@PathVariable String slug) {
         Optional<ProductResponse> productResponse = iProductService.findProductBySlug(slug);
         if (productResponse.isEmpty()) {
             throw new NotFoundObjectException(GlobalConstant.ObjectClass.PRODUCT, GlobalConstant.ErrorCode.MER404);
@@ -45,19 +45,19 @@ public class ProductController {
         return ResponseEntity.ok(productResponse.get());
     }
     @GetMapping(value = "/list-product/{category}")
-    ResponseEntity<Page<ProductResponse>> getStoreByType(@PathVariable String category, @RequestParam(defaultValue = "0") int page) {
+    ResponseEntity<Page<ProductResponse>> getProductByCategory(@PathVariable String category, @RequestParam(defaultValue = "0") int page) {
         SapoPageRequest sapoPageRequest = new SapoPageRequest(GlobalConstant.Value.PAGELIMIT, page * GlobalConstant.Value.PAGELIMIT);
         Page<ProductResponse> productResponses = iProductService.getProductByCategory(category, sapoPageRequest);
         return ResponseEntity.ok(productResponses);
     }
     @GetMapping(value = "/search")
-    ResponseEntity<Page<ProductResponse>> getStoreByKey(@RequestParam String key, @RequestParam(defaultValue = "0") int page) {
+    ResponseEntity<Page<ProductResponse>> getProductByKey(@RequestParam String key, @RequestParam(defaultValue = "0") int page) {
         SapoPageRequest sapoPageRequest = new SapoPageRequest(GlobalConstant.Value.PAGELIMIT, page * GlobalConstant.Value.PAGELIMIT);
         Page<ProductResponse> productResponses = iProductService.searchProductByKey(key, sapoPageRequest);
         return ResponseEntity.ok(productResponses);
     }
     @PostMapping(value = "/insert")
-    ResponseEntity<String> registerStore(@RequestParam String proName,
+    ResponseEntity<String> registerProduct(@RequestParam String proName,
                                          @RequestParam String slug,
                                          @RequestParam String description,
                                          @RequestParam MultipartFile thumbnail,

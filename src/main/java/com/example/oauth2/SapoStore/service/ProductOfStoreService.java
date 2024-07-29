@@ -32,8 +32,18 @@ public class ProductOfStoreService implements IProductOfStoreService {
     }
 
     @Override
+    public Optional<ProductOfStore> ProductOfStoreById(Long id) {
+        return productOfStoreRepository.findById(id);
+    }
+
+    @Override
     public Page<ProductOfStoreResponse> findProductOfStoreByStore(UUID storeCode, Pageable pageable) {
         return productOfStoreRepository.findProductByStore(storeCode, pageable).map(ProductOfStoreResponse::cloneFromProductOfStore);
+    }
+
+    @Override
+    public Optional<ProductOfStore> isExistProductOfStore(String slug, UUID storeCode) {
+        return productOfStoreRepository.isExistProductOfStore(slug,storeCode);
     }
 
 

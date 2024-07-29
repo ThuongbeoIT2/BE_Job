@@ -12,7 +12,9 @@ import java.util.UUID;
 public interface IProductOfStoreService {
     Page<ProductOfStoreResponse> findAll(Pageable pageable);
     Optional<ProductOfStoreResponse> getProductOfStoreById(Long id);
+    Optional<ProductOfStore> ProductOfStoreById(Long id);
     Page<ProductOfStoreResponse> findProductOfStoreByStore(UUID storeCode, Pageable pageable);
+    Optional<ProductOfStore> isExistProductOfStore(String slug, UUID storeCode);
     Page<ProductOfStoreResponse> getProductByCategoryandStore(String slug,UUID storeCode, Pageable pageable);
     Page<ProductOfStoreResponse> searchProductOfStoreByKey(String key,UUID storeCode, Pageable pageable);
     void Save(ProductOfStore productOfStore);

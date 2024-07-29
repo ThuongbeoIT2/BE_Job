@@ -1,12 +1,14 @@
 package com.example.oauth2.SapoStore.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -48,4 +50,7 @@ public class Store {
     @OneToOne
     @JoinColumn(name = "introduceId",foreignKey = @ForeignKey(name = "fk_store_introduce"))
     private StoreIntroduce storeIntroduce;
+    @OneToMany
+    @JsonManagedReference
+    private List<ProductOfStore> productOfStores;
 }

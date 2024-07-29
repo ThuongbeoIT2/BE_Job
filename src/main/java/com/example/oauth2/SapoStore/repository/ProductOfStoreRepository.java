@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -19,4 +20,6 @@ public interface ProductOfStoreRepository extends JpaRepository<ProductOfStore,L
     Page<ProductOfStore> getProductByCategoryandStore(String slug,UUID storeCode, Pageable pageable);
     @Query("select o from ProductOfStore o where o.product.proName like %:key% and o.store.storeCode=:storeCode")
     Page<ProductOfStore> searchProductOfStoreByKey(String key,UUID storeCode, Pageable pageable);
+    @Query("select o from ProductOfStore o where o.store.storeCode=:storeCode and o.product.slug=:slug")
+    Optional<ProductOfStore> isExistProductOfStore(String slug, UUID storeCode);
 }
