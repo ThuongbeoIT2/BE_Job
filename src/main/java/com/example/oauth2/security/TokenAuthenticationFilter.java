@@ -29,7 +29,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, IOException {
         try {
-            if (request.getServletPath().contains("/auth")) {
+            if (request.getServletPath().contains("/auth")|| request.getServletPath().contains("/validtoken")) {
                 filterChain.doFilter(request, response);
                 return;
             }

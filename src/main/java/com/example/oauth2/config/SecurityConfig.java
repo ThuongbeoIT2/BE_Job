@@ -106,6 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/",
                         "/store/**",
+                        "/vnp/**",
                         "/paymentmethod/**",
                         "/storetype/insert",
                         "/error",

@@ -7,8 +7,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Entity
-@Table
+@Entity(name = "productofstoreimage")
+@Table(name = "productofstoreimage")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

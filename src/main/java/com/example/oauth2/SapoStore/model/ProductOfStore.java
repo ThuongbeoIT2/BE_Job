@@ -6,10 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
-@Entity
-@Table
+@Entity(name = "productofstore")
+@Table(name = "productofstore")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,6 +24,8 @@ public class ProductOfStore {
     private String CU="VND";
     private long view;
     private boolean status;
+    @OneToMany
+    private List<OrderDetail> orderDetails;
     @ManyToOne
     @JoinColumn(name = "productId")
     private Product product;

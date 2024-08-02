@@ -6,8 +6,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Set;
 
-@Entity
-@Table
+@Entity(name = "category")
+@Table(name = "category")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

@@ -1,8 +1,12 @@
 package com.example.oauth2.SapoStore.service;
 
 import com.example.oauth2.SapoStore.model.ProductOfStore;
+import com.example.oauth2.SapoStore.model.ProductOfStoreImage;
+import com.example.oauth2.SapoStore.payload.reponse.ProductOSImageResponse;
 import com.example.oauth2.SapoStore.payload.reponse.ProductOfStoreResponse;
+import com.example.oauth2.SapoStore.payload.request.ProductOSImageRequest;
 import com.example.oauth2.SapoStore.payload.request.ProductOfStoreRequest;
+import com.example.oauth2.SapoStore.repository.ProductOfStoreImageRepository;
 import com.example.oauth2.SapoStore.repository.ProductOfStoreRepository;
 import com.example.oauth2.SapoStore.service.iservice.IProductOfStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +15,58 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductOfStoreService implements IProductOfStoreService {
     @Autowired
     private ProductOfStoreRepository productOfStoreRepository;
+    @Autowired
+    private ProductOfStoreImageRepository productOfStoreImageRepository;
 
+    @Override
+    public List<ProductOSImageResponse> getImageByProductOS(long id) {
+        return productOfStoreImageRepository
+                .getProductOfStoreImageByProduct(id)
+                .stream().
+                map(ProductOSImageResponse::cloneFromProductOSImage)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductOSImageResponse> getAllImageByProductOS(long id) {
+        return productOfStoreImageRepository
+                .getAllProductOfStoreImageByProduct(id)
+                .stream().
+                map(ProductOSImageResponse::cloneFromProductOSImage)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void insert(ProductOSImageRequest productOSImageRequest) {
+        ProductOfStoreImage product = new ProductOfStoreImage();
+        product.setTitle(productOSImageRequest.getTitle());
+        product.setDescription(productOSImageRequest.getDescription());
+        product.setStatus(productOSImageRequest.isStatus());
+        product.setUrlImage(productOSImageRequest.getUrlImage());
+        product.setProductOfStore(productOSImageRequest.getProductOfStore());
+        productOfStoreImageRepository.save(product);
+    }
+
+    @Override
+    public void enable(ProductOfStoreImage productOfStoreImage) {
+        productOfStoreImage.setStatus(true);
+        productOfStoreImageRepository.save(productOfStoreImage);
+    }
+
+    @Override
+    public void softDelete(ProductOfStoreImage productOfStoreImage) {
+        productOfStoreImage.setStatus(false);
+        productOfStoreImageRepository.save(productOfStoreImage);
+    }
 
     @Override
     public Page<ProductOfStoreResponse> findAll(Pageable pageable) {

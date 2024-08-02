@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
-    @Query("select o from Category o where o.slug=:slug")
+    @Query("select o from category o where o.slug=:slug")
     Category findCategoriesBySlug(String slug);
 }

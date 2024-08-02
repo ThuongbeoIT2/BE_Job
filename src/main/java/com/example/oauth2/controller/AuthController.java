@@ -53,6 +53,14 @@ public class AuthController {
     }
     @PostMapping("/auth/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        return getResponseEntity(loginRequest);
+    }
+    @PostMapping("/auth/admin/login")
+    public ResponseEntity<?> authenticateAdmin(@Valid @RequestBody LoginRequest loginRequest) {
+        return getResponseEntity(loginRequest);
+    }
+
+    private ResponseEntity<?> getResponseEntity(@RequestBody @Valid LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
@@ -65,6 +73,7 @@ public class AuthController {
         tokenService.saveUserToken(user,token);
         return ResponseEntity.ok(new AuthResponse(token));
     }
+
 
     @PostMapping("/auth/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {

@@ -5,8 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity
-@Table
+@Entity(name = "comment")
+@Table(name = "comment")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

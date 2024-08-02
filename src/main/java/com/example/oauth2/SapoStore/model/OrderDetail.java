@@ -8,7 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity
+@Entity(name = "orderdetail")
 @Table
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +21,10 @@ public class OrderDetail {
     private int quantity;
     private Date createdAt;
     @Column(nullable = false)
-    private long pricetotal;
+    private long price_total;
+    @ManyToOne
+    @JoinColumn(name = "pos")
+    private ProductOfStore productOfStore;
     @ManyToOne
     @JoinColumn(name = "order_detail_id")
     private Cart cart;

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, Integer> {
-    @Query("select o from PaymentMethod o where o.slug=:slug")
+    @Query("select o from paymentmethod o where o.slug=:slug")
     PaymentMethod findBySlug(String slug);
 }

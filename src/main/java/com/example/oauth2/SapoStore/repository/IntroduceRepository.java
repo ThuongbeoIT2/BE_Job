@@ -10,6 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface IntroduceRepository extends JpaRepository<StoreIntroduce,Integer> {
-    @Query("select o.storeIntroduce from Store o where o.storeCode=:storeCode")
+    @Query("select o.storeIntroduce from store o where o.storeCode=:storeCode")
     Optional<StoreIntroduce> getStoreIntroduceByStoreCOde(UUID storeCode);
 }

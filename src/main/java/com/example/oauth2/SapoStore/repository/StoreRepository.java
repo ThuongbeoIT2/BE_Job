@@ -15,12 +15,12 @@ import java.util.UUID;
 @Repository
 public interface StoreRepository extends JpaRepository<Store,Long> {
     Page<Store> findAll(Pageable pageable);
-    @Query("select o from Store o where o.storeCode=:storeCode")
+    @Query("select o from store o where o.storeCode=:storeCode")
     Optional<Store> findStoreByCode(UUID storeCode);
-    @Query("select o from Store o where o.storetype.slug=:slug")
+    @Query("select o from store o where o.storetype.slug=:slug")
     Page<Store> getStoreByType(String slug, Pageable pageable);
-    @Query("select o from Store o where o.email_manager=:email")
+    @Query("select o from store o where o.email_manager=:email")
     Page<Store> getStoreByEmailManager(String email, Pageable pageable);
-    @Query("select o from Store o where o.storeName like %:key%")
+    @Query("select o from store o where o.storeName like %:key%")
     Page<Store> searchStoreByKey(String key, Pageable pageable);
 }

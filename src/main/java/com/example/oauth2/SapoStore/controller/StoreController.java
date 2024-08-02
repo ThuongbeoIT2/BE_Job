@@ -17,7 +17,6 @@ import com.example.oauth2.SapoStore.payload.request.StoreRequest;
 import com.example.oauth2.SapoStore.repository.ProductRepository;
 import com.example.oauth2.SapoStore.repository.StoreTypeRepository;
 import com.example.oauth2.SapoStore.service.iservice.IProductOfStoreService;
-import com.example.oauth2.SapoStore.service.iservice.IProductService;
 import com.example.oauth2.SapoStore.service.iservice.IStoreService;
 import com.example.oauth2.globalContanst.GlobalConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +48,6 @@ public class StoreController {
     private IProductOfStoreService iProductOfStoreService;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private IProductService iProductService;
     @Autowired
     private ProductRepository productRepository;
 
@@ -177,6 +174,17 @@ public class StoreController {
         Page<ProductOfStoreResponse> productResponses = iProductOfStoreService.findProductOfStoreByStore(UUIDstoreCode,sapoPageRequest);
         return ResponseEntity.ok(productResponses);
     }
+    @GetMapping(value = "/manager-store/my-store/product/search")
+    ResponseEntity<Page<ProductOfStoreResponse>> SearchListProductOfMyStore(HttpSession httpSession,
+                                                                         @RequestParam String key,
+                                                                         @RequestParam(defaultValue = "0") int page){
+        String storeCode = verifySession(httpSession);
+        UUID UUIDstoreCode = UUID.fromString(storeCode);
+        SapoPageRequest sapoPageRequest = new SapoPageRequest(GlobalConstant.Value.PAGELIMIT, page * GlobalConstant.Value.PAGELIMIT);
+        Page<ProductOfStoreResponse> productResponses = iProductOfStoreService.searchProductOfStoreByKey(key,UUIDstoreCode,sapoPageRequest);
+        return ResponseEntity.ok(productResponses);
+    }
+
     @GetMapping(value = "/manager-store/my-store/product/{productOfStoreid}")
     ResponseEntity<ProductOfStoreResponse> getProductOfMyStore(HttpSession httpSession,
                                                                      @PathVariable Long productOfStoreid){
@@ -250,7 +258,7 @@ public class StoreController {
         String storeCode = verifySession(httpSession);
         UUID UUIDstoreCode = UUID.fromString(storeCode);
         String email = getEmailAuthentication();
-        Store store= isManagerStore(UUIDstoreCode,email);;
+        isManagerStore(UUIDstoreCode,email);
         Optional<ProductOfStore> productOfStore = iProductOfStoreService.ProductOfStoreById(id);
         if (productOfStore.isEmpty()){
             return ResponseEntity.badRequest().body(GlobalConstant.ResultResponse.FAILURE);

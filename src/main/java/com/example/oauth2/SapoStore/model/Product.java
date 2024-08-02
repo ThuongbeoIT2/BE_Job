@@ -4,8 +4,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@Entity
-@Table
+@Entity(name = "product")
+@Table(name = "product")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

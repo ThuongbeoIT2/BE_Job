@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table
+@Entity(name = "store")
+@Table(name = "store")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

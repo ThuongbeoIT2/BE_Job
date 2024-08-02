@@ -6,8 +6,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Set;
 
-@Entity
-@Table
+@Entity(name = "storetype")
+@Table(name = "storetype")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -22,7 +22,6 @@ public class StoreType {
     private String slug;
     private String description;
     private String thumbnail;
-
     @OneToMany
     @JsonManagedReference
     private Set<Store> stores;

@@ -3,6 +3,8 @@ package com.example.oauth2.security;
 
 import com.example.oauth2.config.AppProperties;
 
+import com.example.oauth2.model.User;
+import com.example.oauth2.token.TokenRepository;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +19,10 @@ public class TokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
+
     private final AppProperties appProperties;
 
-    public TokenProvider(AppProperties appProperties) {
+    public TokenProvider( AppProperties appProperties) {
         this.appProperties = appProperties;
     }
 
@@ -63,6 +66,8 @@ public class TokenProvider {
         }
         return false;
     }
+
+
 
 
 }

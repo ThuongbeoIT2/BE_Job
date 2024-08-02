@@ -5,8 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity
-@Table
+@Entity(name = "storeintroduce")
+@Table(name = "storeintroduce")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

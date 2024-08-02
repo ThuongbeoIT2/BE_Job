@@ -12,6 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface StoreTypeRepository extends JpaRepository<StoreType,Integer> {
-    @Query("select o from StoreType o where o.slug=:slug")
+    @Query("select o from storetype o where o.slug=:slug")
     StoreType findBySlug(String slug);
 }

@@ -14,10 +14,10 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Integer> {
     Page<Product> findAll(Pageable pageable);
-    @Query("select o from Product o where o.slug=:slug")
+    @Query("select o from product o where o.slug=:slug")
     Optional<Product> findProductBySlug(String slug);
-    @Query("select o from Product o where o.category.slug=:slug")
+    @Query("select o from product o where o.category.slug=:slug")
     Page<Product> getProductByCategory(String slug, Pageable pageable);
-    @Query("select o from Product o where o.proName like %:key%")
+    @Query("select o from product o where o.proName like %:key%")
     Page<Product> searchProductByKey(String key, Pageable pageable);
 }
