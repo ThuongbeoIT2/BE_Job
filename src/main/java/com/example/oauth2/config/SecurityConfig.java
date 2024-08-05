@@ -108,7 +108,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/store/**",
                         "/vnp/**",
                         "/paymentmethod/**",
-                        "/storetype/insert",
+                        "/api/v1/notifications",
                         "/error",
                         "/favicon.ico",
                         "/**/*.png",
