@@ -104,8 +104,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/",
-                        "/store/**",
+                .antMatchers(
                         "/vnp/**",
                         "/paymentmethod/**",
                         "/api/v1/notifications",

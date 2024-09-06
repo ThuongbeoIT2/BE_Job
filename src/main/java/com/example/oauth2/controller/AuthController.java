@@ -55,10 +55,7 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         return getResponseEntity(loginRequest);
     }
-    @PostMapping("/auth/admin/login")
-    public ResponseEntity<?> authenticateAdmin(@Valid @RequestBody LoginRequest loginRequest) {
-        return getResponseEntity(loginRequest);
-    }
+   
 
     private ResponseEntity<?> getResponseEntity(@RequestBody @Valid LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -89,13 +86,9 @@ public class AuthController {
         Set<Role> roleSet= new HashSet<>();
         roleSet.add(Role.ROLE_USER);
         user.setRoles(roleSet);
-        User result = userRepository.save(user);
+        userRepository.save(user);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/user/me")
-                .buildAndExpand(result.getId()).toUri();
-
-        return ResponseEntity.created(location)
+        return ResponseEntity.ok()
                 .body(new ApiResponse(true, "User registered successfully@",""));
     }
 }
