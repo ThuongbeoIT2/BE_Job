@@ -1,6 +1,7 @@
 package com.example.oauth2.config;
 
 
+import com.example.oauth2.model.Role;
 import com.example.oauth2.security.CustomUserDetailsService;
 import com.example.oauth2.security.RestAuthenticationEntryPoint;
 import com.example.oauth2.security.TokenAuthenticationFilter;
@@ -122,6 +123,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/**", "/oauth2/**","/validtoken"
                 )
                 .permitAll()
+                .antMatchers("/storetype/delete/**").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()
                 .and()

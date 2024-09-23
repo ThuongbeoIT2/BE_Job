@@ -12,7 +12,7 @@ public class StoreTypeResponse {
     private int id;
     private String typeName;
     private String description;
-    private String thumnail;
+    private String thumbnail;
     private String slug;
     public static StoreTypeResponse cloneFromStoreType(StoreType storeType){
         StoreTypeResponse storeTypeResponse= new StoreTypeResponse();
@@ -20,7 +20,7 @@ public class StoreTypeResponse {
         storeTypeResponse.setId(storeType.getId());
         storeTypeResponse.setSlug(storeType.getSlug());
         storeTypeResponse.setDescription(storeType.getDescription());
-        storeTypeResponse.setThumnail(storeType.getThumbnail());
+        storeTypeResponse.setThumbnail(storeType.getThumbnail());
         return storeTypeResponse;
     }
 
