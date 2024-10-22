@@ -7,7 +7,9 @@ import com.example.oauth2.SapoStore.model.Category;
 import com.example.oauth2.SapoStore.payload.reponse.CategoryResponse;
 import com.example.oauth2.SapoStore.repository.CategoryRepository;
 import com.example.oauth2.globalContanst.GlobalConstant;
+import com.example.oauth2.payload.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +27,7 @@ public class CategoryController {
     @Autowired
     private CategoryRepository categoryRepository;
     @PostMapping("/insert")
-    ResponseEntity<String> InsertStoreType(@RequestParam String cateName,
+    ResponseEntity<ApiResponse> InsertStoreType(@RequestParam String cateName,
                                            @RequestParam String slug,
                                            @RequestParam String description,
                                            @RequestParam MultipartFile thumbnailimg){
@@ -41,9 +43,9 @@ public class CategoryController {
             Map<String, Object> uploadResult = upload(thumbnailimg);
             category.setThumbnail(uploadResult.get("secure_url").toString());
             categoryRepository.save(category);
-            return ResponseEntity.ok("Insert Category success");
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
         }
-        return ResponseEntity.badRequest().body("Slug Already exist");
+        return ResponseEntity.badRequest().body(new ApiResponse("FAILD",GlobalConstant.ResultResponse.FAILURE,""));
     }
     @GetMapping(value = "getAll")
     ResponseEntity<List<CategoryResponse>> getAllStoreType(){
@@ -56,11 +58,11 @@ public class CategoryController {
         );
     }
     @PostMapping(value = "/update/{id}")
-    ResponseEntity<String> updateStoretype(@PathVariable int id,
-                                           @RequestParam String cateName,
-                                           @RequestParam String slug,
-                                           @RequestParam String description,
-                                           @RequestParam MultipartFile thumnnailimg
+    ResponseEntity<ApiResponse> updateStoretype(@PathVariable int id,
+                                                @RequestParam String cateName,
+                                                @RequestParam String slug,
+                                                @RequestParam String description,
+                                                @RequestParam MultipartFile thumnnailimg
     ){
         Optional<Category> category = findStoreTypeById(id);
         if (category.isEmpty()){
@@ -77,16 +79,16 @@ public class CategoryController {
         category.get().setDescription(description);
         category.get().setCateName(cateName);
         categoryRepository.save(category.get());
-        return ResponseEntity.ok("update success");
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
     @GetMapping(value = "/delete/{id}")
-    ResponseEntity<String> deleteStoreType(@PathVariable int id){
+    ResponseEntity<ApiResponse> deleteStoreType(@PathVariable int id){
         Optional<Category> category = findStoreTypeById(id);
         if (category.isEmpty()){
             throw  new NotFoundObjectException(GlobalConstant.ObjectClass.CATEGORY,GlobalConstant.ErrorCode.MER404);
         }
         categoryRepository.delete(category.get());
-        return ResponseEntity.ok("delete success");
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
     public Category findStoreTypeBySlug(String slug){
         Category category = categoryRepository.findCategoriesBySlug(slug);

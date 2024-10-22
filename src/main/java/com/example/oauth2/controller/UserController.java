@@ -41,11 +41,11 @@ public class UserController {
         if (passwordEncoder.matches(user.getPassword(), changePasswordRequest.getOldPassword())){
             user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ApiResponse(true,"Success","")
+                    new ApiResponse("OK","Success","")
             );
         }else {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new ApiResponse(false,"OLD_PASSWORD_INCORRECT","")
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
+                    new ApiResponse("FAILED","OLD_PASSWORD_INCORRECT","")
             );
         }
     }

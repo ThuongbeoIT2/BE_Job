@@ -19,8 +19,10 @@ import com.example.oauth2.SapoStore.repository.StoreTypeRepository;
 import com.example.oauth2.SapoStore.service.iservice.IProductOfStoreService;
 import com.example.oauth2.SapoStore.service.iservice.IStoreService;
 import com.example.oauth2.globalContanst.GlobalConstant;
+import com.example.oauth2.payload.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -71,13 +73,13 @@ public class StoreController {
     }
 
     @PostMapping(value = "/register-store")
-    ResponseEntity<String> registerStore(@RequestParam String storeName,
-                                         @RequestParam String address,
-                                         @RequestParam String phoneNumber,
-                                         @RequestParam MultipartFile thumbnail,
-                                         @RequestParam String description,
-                                         @RequestParam MultipartFile eKyc,
-                                         @RequestParam String storeType) {
+    ResponseEntity<ApiResponse> registerStore(@RequestParam String storeName,
+                                              @RequestParam String address,
+                                              @RequestParam String phoneNumber,
+                                              @RequestParam MultipartFile thumbnail,
+                                              @RequestParam String description,
+                                              @RequestParam MultipartFile eKyc,
+                                              @RequestParam String storeType) {
         StoreRequest storeRequest = new StoreRequest();
         storeRequest.setStoreName(storeName);
         storeRequest.setAddress(address);
@@ -92,11 +94,11 @@ public class StoreController {
         Map<String, Object> uploadEKYC = upload(eKyc);
         storeRequest.setEKyc(uploadEKYC.get("secure_url").toString());
         iStoreService.insert(storeRequest);
-        return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
 
     @PostMapping(value = "/update/{storeCode}")
-    ResponseEntity<String> updateStore(@PathVariable UUID storeCode,
+    ResponseEntity<ApiResponse> updateStore(@PathVariable UUID storeCode,
                                        @RequestParam String storeName,
                                        @RequestParam String address,
                                        @RequestParam String description,
@@ -112,7 +114,7 @@ public class StoreController {
         storeRequest.setDescription(description);
         storeRequest.setPhoneNumber(phoneNumber);
         iStoreService.update(storeRequest, store.get());
-        return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
 
     @GetMapping(value = "/acpstore/{storeCode}")

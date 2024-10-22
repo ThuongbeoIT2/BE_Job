@@ -6,8 +6,10 @@ import com.example.oauth2.SapoStore.model.StoreIntroduce;
 import com.example.oauth2.SapoStore.repository.IntroduceRepository;
 import com.example.oauth2.SapoStore.service.iservice.IStoreService;
 import com.example.oauth2.globalContanst.GlobalConstant;
+import com.example.oauth2.payload.ApiResponse;
 import com.example.oauth2.util.ProcessUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,13 +24,13 @@ public class StoreIntroduceController {
     @Autowired
     private IStoreService iStoreService;
     @PostMapping(value = "/insert/{storeCode}")
-    ResponseEntity<String> insertStoreIntroduce(@PathVariable UUID storeCode,
-                                                @RequestParam String title,
-                                                @RequestParam String description,
-                                                @RequestParam String link_facebook,
-                                                @RequestParam String link_instagram,
-                                                @RequestParam String link_zalo,
-                                                @RequestParam String hotline){
+    ResponseEntity<ApiResponse> insertStoreIntroduce(@PathVariable UUID storeCode,
+                                                     @RequestParam String title,
+                                                     @RequestParam String description,
+                                                     @RequestParam String link_facebook,
+                                                     @RequestParam String link_instagram,
+                                                     @RequestParam String link_zalo,
+                                                     @RequestParam String hotline){
         Optional<Store> store = iStoreService.findStoreBystoreCode(storeCode);
         if (store.isEmpty()){
             throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORE,GlobalConstant.ErrorCode.MER404);
@@ -45,12 +47,12 @@ public class StoreIntroduceController {
             store.get().setStoreIntroduce(storeIntroduce);
             store.get().setUpdatedAt(ProcessUtils.getCurrentDay());
             iStoreService.Save(store.get());
-            return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
         }
-        return ResponseEntity.badRequest().body(GlobalConstant.ResultResponse.FAILURE);
+        return ResponseEntity.badRequest().body(new ApiResponse("FAILED",GlobalConstant.ResultResponse.FAILURE,""));
     }
     @PostMapping(value = "/update/{storeCode}")
-    ResponseEntity<String> updateStoreIntroduce(@PathVariable UUID storeCode,
+    ResponseEntity<ApiResponse> updateStoreIntroduce(@PathVariable UUID storeCode,
                                                 @RequestParam String title,
                                                 @RequestParam String description,
                                                 @RequestParam String link_facebook,
@@ -72,9 +74,9 @@ public class StoreIntroduceController {
             store.get().setStoreIntroduce(store.get().getStoreIntroduce());
             store.get().setUpdatedAt(ProcessUtils.getCurrentDay());
             iStoreService.Save(store.get());
-            return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
         }
-        return ResponseEntity.badRequest().body(GlobalConstant.ResultResponse.FAILURE);
+        return ResponseEntity.badRequest().body(new ApiResponse("FAILED",GlobalConstant.ResultResponse.FAILURE,""));
     }
     @GetMapping(value = "/view/{storeCode}")
     ResponseEntity<StoreIntroduce> viewIntroduce(@PathVariable UUID storeCode){

@@ -9,8 +9,10 @@ import com.example.oauth2.SapoStore.payload.request.ProductRequest;
 import com.example.oauth2.SapoStore.repository.CategoryRepository;
 import com.example.oauth2.SapoStore.service.iservice.IProductService;
 import com.example.oauth2.globalContanst.GlobalConstant;
+import com.example.oauth2.payload.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,11 +59,11 @@ public class ProductController {
         return ResponseEntity.ok(productResponses);
     }
     @PostMapping(value = "/insert")
-    ResponseEntity<String> registerProduct(@RequestParam String proName,
-                                         @RequestParam String slug,
-                                         @RequestParam String description,
-                                         @RequestParam MultipartFile thumbnail,
-                                         @RequestParam String category) {
+    ResponseEntity<ApiResponse> registerProduct(@RequestParam String proName,
+                                                @RequestParam String slug,
+                                                @RequestParam String description,
+                                                @RequestParam MultipartFile thumbnail,
+                                                @RequestParam String category) {
         ProductRequest productRequest = new ProductRequest();
         productRequest.setProName(proName);
         productRequest.setSlug(slug);
@@ -76,7 +78,7 @@ public class ProductController {
         Map<String, Object> uploadthumbnail = upload(thumbnail);
         productRequest.setThumbnail(uploadthumbnail.get("secure_url").toString());
         iProductService.insert(productRequest);
-        return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
 
     public Map upload(MultipartFile file) {

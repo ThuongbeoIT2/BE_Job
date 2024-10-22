@@ -7,7 +7,9 @@ import com.example.oauth2.SapoStore.payload.reponse.PaymentMethodResponse;
 import com.example.oauth2.SapoStore.payload.request.PaymentMethodRequest;
 import com.example.oauth2.SapoStore.repository.PaymentMethodRepository;
 import com.example.oauth2.globalContanst.GlobalConstant;
+import com.example.oauth2.payload.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +47,7 @@ public class PaymentMethodController {
                 );
     }
     @PostMapping(value = "/update/{id}")
-    ResponseEntity<String> updatePaymentMethod(@PathVariable int id, @RequestBody PaymentMethodRequest paymentMethodRequest){
+    ResponseEntity<ApiResponse> updatePaymentMethod(@PathVariable int id, @RequestBody PaymentMethodRequest paymentMethodRequest){
         Optional<PaymentMethod> paymentMethod = findPaymentMethodById(id);
         if (paymentMethod.isEmpty()){
             throw  new NotFoundObjectException(GlobalConstant.ObjectClass.PAYMENTMETHOD,GlobalConstant.ErrorCode.MER404);
@@ -57,16 +59,16 @@ public class PaymentMethodController {
         paymentMethod.get().setDescription(paymentMethodRequest.getDescription());
         paymentMethod.get().setMethod(paymentMethodRequest.getPaymentmethod());
         paymentMethodRepository.save(paymentMethod.get());
-        return ResponseEntity.ok("update success");
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
     @GetMapping(value = "/delete/{id}")
-    ResponseEntity<String> deletePaymentMethod(@PathVariable int id){
+    ResponseEntity<ApiResponse> deletePaymentMethod(@PathVariable int id){
         Optional<PaymentMethod> paymentMethod = findPaymentMethodById(id);
         if (paymentMethod.isEmpty()){
             throw  new NotFoundObjectException(GlobalConstant.ObjectClass.PAYMENTMETHOD,GlobalConstant.ErrorCode.MER404);
         }
         paymentMethodRepository.delete(paymentMethod.get());
-        return ResponseEntity.ok("delete success");
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
     public PaymentMethod findPaymentmethodBySlug(String slug){
         PaymentMethod paymentMethod = paymentMethodRepository.findBySlug(slug);

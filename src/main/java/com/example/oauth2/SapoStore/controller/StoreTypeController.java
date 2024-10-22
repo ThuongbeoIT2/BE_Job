@@ -7,7 +7,9 @@ import com.example.oauth2.SapoStore.model.StoreType;
 import com.example.oauth2.SapoStore.payload.reponse.StoreTypeResponse;
 import com.example.oauth2.SapoStore.repository.StoreTypeRepository;
 import com.example.oauth2.globalContanst.GlobalConstant;
+import com.example.oauth2.payload.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,10 +28,10 @@ public class StoreTypeController {
     @Autowired
     private StoreTypeRepository storeTypeRepository;
     @PostMapping("/insert")
-    ResponseEntity<String> InsertStoreType(@RequestParam String typeName,
-                                           @RequestParam String slug,
-                                           @RequestParam String description,
-                                           @RequestParam MultipartFile thumbnailimg){
+    ResponseEntity<ApiResponse> InsertStoreType(@RequestParam String typeName,
+                                                @RequestParam String slug,
+                                                @RequestParam String description,
+                                                @RequestParam MultipartFile thumbnailimg){
         if (findStoreTypeBySlug(slug)==null){
             if (thumbnailimg.isEmpty()){
                 throw  new NotFoundObjectException(GlobalConstant.ObjectClass.STORETYPE,GlobalConstant.ErrorCode.MER430);
@@ -42,9 +44,9 @@ public class StoreTypeController {
             Map<String, Object> uploadResult = upload(thumbnailimg);
             storeType.setThumbnail(uploadResult.get("secure_url").toString());
             storeTypeRepository.save(storeType);
-            return ResponseEntity.ok("Insert Payment method success");
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Store type added successfully",""));
         }
-        return ResponseEntity.badRequest().body("Slug Already exist");
+        return ResponseEntity.badRequest().body(new ApiResponse("FAILED","Slug already exist",""));
     }
     @GetMapping(value = "getAll")
     ResponseEntity<List<StoreTypeResponse>> getAllStoreType(){
@@ -57,29 +59,43 @@ public class StoreTypeController {
         );
     }
     @PostMapping(value = "/update/{id}")
-    ResponseEntity<String> updateStoretype(@PathVariable int id,
-                                               @RequestParam String typeName,
-                                               @RequestParam String slug,
-                                               @RequestParam String description,
-                                               @RequestParam MultipartFile thumnnailimg
-                                               ){
-        Optional<StoreType> storeType = findStoreTypeById(id);
-        if (storeType.isEmpty()){
-            throw  new NotFoundObjectException(GlobalConstant.ObjectClass.STORETYPE,GlobalConstant.ErrorCode.MER404);
+    public ResponseEntity<ApiResponse> updateStoretype(
+            @PathVariable int id,
+            @RequestParam String typeName,
+            @RequestParam String slug,
+            @RequestParam String description,
+            @RequestParam(required = false) MultipartFile thumbnailimg) {
+
+        // Retrieve the store type by ID
+        Optional<StoreType> optionalStoreType = findStoreTypeById(id);
+        if (optionalStoreType.isEmpty()) {
+            throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORETYPE, GlobalConstant.ErrorCode.MER404);
         }
-        if (findStoreTypeBySlug(slug)!=null && storeType.get().getId()!=id){
-            throw new SlugConflictException(GlobalConstant.ObjectClass.STORETYPE,GlobalConstant.ErrorCode.MER420);
+
+        StoreType existingStoreType = optionalStoreType.get();
+
+        // Check for slug conflict
+        if (findStoreTypeBySlug(slug) != null && existingStoreType.getId() != id) {
+            throw new SlugConflictException(GlobalConstant.ObjectClass.STORETYPE, GlobalConstant.ErrorCode.MER420);
         }
-        if (!thumnnailimg.isEmpty()){
-            Map<String, Object> uploadResult = upload(thumnnailimg);
-            storeType.get().setThumbnail(uploadResult.get("secure_url").toString());
+
+        // Update the store type details
+        existingStoreType.setSlug(slug);
+        existingStoreType.setDescription(description);
+        existingStoreType.setTypeName(typeName);
+
+        // Handle thumbnail image upload if provided
+        if (thumbnailimg != null && !thumbnailimg.isEmpty()) {
+            Map<String, Object> uploadResult = upload(thumbnailimg);
+            existingStoreType.setThumbnail(uploadResult.get("secure_url").toString());
         }
-        storeType.get().setSlug(slug);
-        storeType.get().setDescription(description);
-        storeType.get().setTypeName(typeName);
-        storeTypeRepository.save(storeType.get());
-        return ResponseEntity.ok("update success");
+
+        // Save the updated store type
+        storeTypeRepository.save(existingStoreType);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Update success",""));
     }
+
     @GetMapping(value = "/delete/{id}")
     ResponseEntity<String> deleteStoreType(@PathVariable int id){
         Optional<StoreType> storeType = findStoreTypeById(id);
