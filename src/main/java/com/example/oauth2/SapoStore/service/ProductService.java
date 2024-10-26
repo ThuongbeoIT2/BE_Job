@@ -40,9 +40,25 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Optional<Product> findById(int id) {
+        return productRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Product> findBySlug(String slug) {
+        return productRepository.findProductBySlug(slug);
+    }
+
+    @Override
     public void Save(Product product) {
         productRepository.save(product);
     }
+
+    @Override
+    public void Delete(Product product) {
+        productRepository.delete(product);
+    }
+
     @Override
     public void insert(ProductRequest productRequest) {
         Product product= new Product();

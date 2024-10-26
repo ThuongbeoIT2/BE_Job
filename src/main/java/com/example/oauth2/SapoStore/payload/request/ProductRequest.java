@@ -11,4 +11,6 @@ public class ProductRequest {
     private String thumbnail;
     private String description;
     private String category;
+
+
 }

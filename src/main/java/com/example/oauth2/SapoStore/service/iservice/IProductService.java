@@ -14,7 +14,10 @@ public interface IProductService {
     Optional<ProductResponse> findProductBySlug(String slug);
     Page<ProductResponse> getProductByCategory(String category, Pageable pageable);
     Page<ProductResponse> searchProductByKey(String key, Pageable pageable);
+    Optional<Product> findById(int id);
+    Optional<Product> findBySlug(String slug);
     void Save(Product product);
+    void Delete(Product product);
     void insert(ProductRequest productRequest);
     void update(ProductRequest productRequest, Product product);
 }

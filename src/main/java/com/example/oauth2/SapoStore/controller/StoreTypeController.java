@@ -27,16 +27,17 @@ public class StoreTypeController {
     private Cloudinary cloudinary;
     @Autowired
     private StoreTypeRepository storeTypeRepository;
+
     @PostMapping("/insert")
     ResponseEntity<ApiResponse> InsertStoreType(@RequestParam String typeName,
                                                 @RequestParam String slug,
                                                 @RequestParam String description,
-                                                @RequestParam MultipartFile thumbnailimg){
-        if (findStoreTypeBySlug(slug)==null){
-            if (thumbnailimg.isEmpty()){
-                throw  new NotFoundObjectException(GlobalConstant.ObjectClass.STORETYPE,GlobalConstant.ErrorCode.MER430);
+                                                @RequestParam MultipartFile thumbnailimg) {
+        if (findStoreTypeBySlug(slug) == null) {
+            if (thumbnailimg.isEmpty()) {
+                throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORETYPE, GlobalConstant.ErrorCode.MER430);
             }
-            StoreType storeType= new StoreType();
+            StoreType storeType = new StoreType();
             storeType.setSlug(slug);
             storeType.setTypeName(typeName);
             storeType.setDescription(description);
@@ -44,12 +45,13 @@ public class StoreTypeController {
             Map<String, Object> uploadResult = upload(thumbnailimg);
             storeType.setThumbnail(uploadResult.get("secure_url").toString());
             storeTypeRepository.save(storeType);
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Store type added successfully",""));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK", "Store type added successfully", ""));
         }
-        return ResponseEntity.badRequest().body(new ApiResponse("FAILED","Slug already exist",""));
+        return ResponseEntity.badRequest().body(new ApiResponse("FAILED", "Slug already exist", ""));
     }
+
     @GetMapping(value = "getAll")
-    ResponseEntity<List<StoreTypeResponse>> getAllStoreType(){
+    ResponseEntity<List<StoreTypeResponse>> getAllStoreType() {
         return ResponseEntity.ok(storeTypeRepository.findAll()
                 .stream()
                 .map(storeType -> {
@@ -58,6 +60,14 @@ public class StoreTypeController {
                 }).collect(Collectors.toList())
         );
     }
+
+    @GetMapping(value = "getDetail/{id}")
+    ResponseEntity<StoreTypeResponse> getDetailStoreType(@PathVariable int id) {
+        Optional<StoreType> storeType = findStoreTypeById(id);
+        return storeType.map(type -> ResponseEntity.ok(StoreTypeResponse.cloneFromStoreType(type))).
+                orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
     @PostMapping(value = "/update/{id}")
     public ResponseEntity<ApiResponse> updateStoretype(
             @PathVariable int id,
@@ -93,31 +103,33 @@ public class StoreTypeController {
         // Save the updated store type
         storeTypeRepository.save(existingStoreType);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Update success",""));
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK", "Update success", ""));
     }
 
     @GetMapping(value = "/delete/{id}")
-    ResponseEntity<String> deleteStoreType(@PathVariable int id){
+    ResponseEntity<String> deleteStoreType(@PathVariable int id) {
         Optional<StoreType> storeType = findStoreTypeById(id);
-        if (storeType.isEmpty()){
-            throw  new NotFoundObjectException(GlobalConstant.ObjectClass.STORETYPE,GlobalConstant.ErrorCode.MER404);
+        if (storeType.isEmpty()) {
+            throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORETYPE, GlobalConstant.ErrorCode.MER404);
         }
         storeTypeRepository.delete(storeType.get());
         return ResponseEntity.ok("delete success");
     }
-    public StoreType findStoreTypeBySlug(String slug){
+
+    public StoreType findStoreTypeBySlug(String slug) {
         StoreType storeType = storeTypeRepository.findBySlug(slug);
         return storeType;
     }
-    public Optional<StoreType> findStoreTypeById(int id){
+
+    public Optional<StoreType> findStoreTypeById(int id) {
         return storeTypeRepository.findById(id);
     }
 
-    public  Map upload(MultipartFile file)  {
-        try{
+    public Map upload(MultipartFile file) {
+        try {
             Map data = cloudinary.uploader().upload(file.getBytes(), Map.of());
             return data;
-        }catch (IOException io){
+        } catch (IOException io) {
             throw new RuntimeException("Image upload fail");
         }
     }

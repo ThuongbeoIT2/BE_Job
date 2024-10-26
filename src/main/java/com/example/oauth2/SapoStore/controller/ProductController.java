@@ -2,7 +2,9 @@ package com.example.oauth2.SapoStore.controller;
 
 import com.cloudinary.Cloudinary;
 import com.example.oauth2.SapoStore.exception.NotFoundObjectException;
+import com.example.oauth2.SapoStore.exception.SlugConflictException;
 import com.example.oauth2.SapoStore.model.Category;
+import com.example.oauth2.SapoStore.model.Product;
 import com.example.oauth2.SapoStore.page.SapoPageRequest;
 import com.example.oauth2.SapoStore.payload.reponse.ProductResponse;
 import com.example.oauth2.SapoStore.payload.request.ProductRequest;
@@ -68,6 +70,9 @@ public class ProductController {
         productRequest.setProName(proName);
         productRequest.setSlug(slug);
         productRequest.setDescription(description);
+        if (iProductService.findProductBySlug(slug).isPresent()){
+            throw new SlugConflictException(GlobalConstant.ObjectClass.PRODUCT,GlobalConstant.ErrorCode.MER420);
+        }
        if (findCategoryBySlug(category)== null){
            throw new NotFoundObjectException(GlobalConstant.ObjectClass.CATEGORY,GlobalConstant.ErrorCode.MER404);
        }
@@ -80,7 +85,53 @@ public class ProductController {
         iProductService.insert(productRequest);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
+    @PostMapping(value = "/update/{slug}")
+    ResponseEntity<ApiResponse> updateProduct(@PathVariable String slug,
+                                              @RequestParam int id,
+                                              @RequestParam String proName,
+                                              @RequestParam(required = false) MultipartFile thumbnail,
+                                              @RequestParam String description,
+                                              @RequestParam String category) {
 
+        // Find the existing product by slug
+        Optional<Product> product = iProductService.findBySlug(slug);
+        if (product.isEmpty()){
+            product = iProductService.findById(id);
+        }else if (product.get().getProId() != id) {
+            throw new SlugConflictException(GlobalConstant.ObjectClass.PRODUCT, GlobalConstant.ErrorCode.MER420);
+        }
+        Product existingProduct = product.get();
+
+        // Check if the category exists
+        if (findCategoryBySlug(category) == null) {
+            throw new NotFoundObjectException(GlobalConstant.ObjectClass.CATEGORY, GlobalConstant.ErrorCode.MER404);
+        }
+        existingProduct.setProName(proName);
+        existingProduct.setSlug(slug);
+        existingProduct.setDescription(description);
+        existingProduct.setCategory(findCategoryBySlug(category));
+        // If a new thumbnail is provided, upload it
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            Map<String, Object> uploadThumbnail = upload(thumbnail);
+            existingProduct.setThumbnail(uploadThumbnail.get("secure_url").toString());
+        }
+
+        // Save the updated product
+        iProductService.Save(existingProduct);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, "Product updated successfully"));
+    }
+
+    @GetMapping(value = "/delete/{id}")
+    ResponseEntity<ApiResponse> deleteStoreType(@PathVariable int id){
+        Optional<Product> product = iProductService.findById(id);
+        if (product.isEmpty()){
+            throw  new NotFoundObjectException(GlobalConstant.ObjectClass.CATEGORY,GlobalConstant.ErrorCode.MER404);
+        }
+        iProductService.Delete(product.get());
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
+    }
     public Map upload(MultipartFile file) {
         try {
             Map data = cloudinary.uploader().upload(file.getBytes(), Map.of());
@@ -96,4 +147,5 @@ public class ProductController {
         }
         return category;
     }
+
 }
