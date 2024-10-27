@@ -22,6 +22,8 @@ public class StoreResponse {
 
     private String phoneNumber;
     private String thumbnail;
+    private String ekyc_01;
+    private String ekyc_02;
     private String description;
     private boolean status;
     private double evaluate;
@@ -36,13 +38,15 @@ public class StoreResponse {
         storeResponse.setStoreId(store.getStoreId());
         storeResponse.setStoreCode(store.getStoreCode());
         storeResponse.setStoreName(store.getStoreName());
-        storeResponse.setAddress(storeResponse.address);
+        storeResponse.setAddress(store.getAddress());
         storeResponse.setEmail_manager(store.getEmail_manager());
         storeResponse.setPhoneNumber(store.getPhoneNumber());
         storeResponse.setThumbnail(store.getThumbnail());
-        storeResponse.setDescription(storeResponse.description);
+        storeResponse.setDescription(store.getDescription());
         storeResponse.setStatus(store.isStatus());
         storeResponse.setEvaluate(store.getEvaluate());
+        storeResponse.setEkyc_01(store.getEKyc_01());
+        storeResponse.setEkyc_02(store.getEKyc_02());
         storeResponse.setView(store.getView());
         storeResponse.setStoreType(store.getStoretype().getTypeName());
         storeResponse.setCreatedAt(store.getCreatedAt());

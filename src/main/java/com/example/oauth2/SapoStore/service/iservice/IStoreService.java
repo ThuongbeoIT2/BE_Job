@@ -26,4 +26,5 @@ public interface IStoreService {
     void softDelete(Store store);
     void enableStatus(Store store);
     void ACPStore(Store store);
+    void WarningStore(String email_manager, String message);
 }

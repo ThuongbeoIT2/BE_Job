@@ -78,7 +78,8 @@ public class StoreController {
                                               @RequestParam String phoneNumber,
                                               @RequestParam MultipartFile thumbnail,
                                               @RequestParam String description,
-                                              @RequestParam MultipartFile eKyc,
+                                              @RequestParam MultipartFile eKyc_01,
+                                              @RequestParam MultipartFile eKyc_02,
                                               @RequestParam String storeType) {
         StoreRequest storeRequest = new StoreRequest();
         storeRequest.setStoreName(storeName);
@@ -86,13 +87,15 @@ public class StoreController {
         storeRequest.setDescription(description);
         storeRequest.setPhoneNumber(phoneNumber);
         storeRequest.setStoreType(findStoretypeBySlug(storeType));
-        if (thumbnail.isEmpty() || eKyc.isEmpty()) {
+        if (thumbnail.isEmpty() || eKyc_01.isEmpty() || eKyc_02.isEmpty()) {
             throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORE, GlobalConstant.ErrorCode.MER430);
         }
         Map<String, Object> uploadthumbnail = upload(thumbnail);
         storeRequest.setThumbnail(uploadthumbnail.get("secure_url").toString());
-        Map<String, Object> uploadEKYC = upload(eKyc);
-        storeRequest.setEKyc(uploadEKYC.get("secure_url").toString());
+        Map<String, Object> uploadEKYC_01 = upload(eKyc_01);
+        storeRequest.setEKyc_01(uploadEKYC_01.get("secure_url").toString());
+        Map<String, Object> uploadEKYC_02 = upload(eKyc_02);
+        storeRequest.setEKyc_02(uploadEKYC_02.get("secure_url").toString());
         iStoreService.insert(storeRequest);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
@@ -124,6 +127,18 @@ public class StoreController {
             throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORE, GlobalConstant.ErrorCode.MER404);
         }
         iStoreService.ACPStore(store.get());
+        return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
+    }
+    @PostMapping(value = "/warningstore/{storeCode}")
+    ResponseEntity<String> WarningStore(@PathVariable UUID storeCode,
+                                        @RequestParam String email,
+                                        @RequestParam String mesage) {
+        Optional<Store> store = iStoreService.findStoreBystoreCode(storeCode);
+        if (store.isEmpty()) {
+            throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORE, GlobalConstant.ErrorCode.MER404);
+        }
+        isManagerStore(storeCode,email);
+        iStoreService.WarningStore(email,mesage);
         return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
     }
 

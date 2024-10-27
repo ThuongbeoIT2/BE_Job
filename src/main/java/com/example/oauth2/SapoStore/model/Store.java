@@ -41,7 +41,8 @@ public class Store {
     private double evaluate;
     private Date createdAt;
     private Date updatedAt;
-    private String eKyc;
+    private String eKyc_01;
+    private String eKyc_02;
     private long view;
     @ManyToOne
     @JoinColumn(name = "store_type",foreignKey = @ForeignKey(name = "fk_store_storeType"))

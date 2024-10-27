@@ -10,6 +10,7 @@ public class StoreRequest {
     private String phoneNumber;
     private String thumbnail;
     private String description;
-    private String eKyc;
+    private String eKyc_01;
+    private String eKyc_02;
     private StoreType storeType;
 }

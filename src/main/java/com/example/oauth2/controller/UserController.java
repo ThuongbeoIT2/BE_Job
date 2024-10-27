@@ -13,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -34,6 +31,15 @@ public class UserController {
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
     }
+    @PostMapping( "/user/email")
+    public UserInfoResponse getManagerStore(@RequestParam String email) {
+        return userRepository.findByEmail(email).map(user -> {
+                    UserInfoResponse userInfoResponse= new UserInfoResponse(user);
+                    return userInfoResponse;
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
+    }
+
     @PostMapping( "/user/me/changepassword")
     public ResponseEntity<ApiResponse> ChangePassword(@CurrentUser UserPrincipal userPrincipal, @RequestBody ChangePasswordRequest changePasswordRequest) {
         User user= userRepository.findById(userPrincipal.getId())

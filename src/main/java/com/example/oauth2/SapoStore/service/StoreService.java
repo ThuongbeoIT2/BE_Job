@@ -74,7 +74,6 @@ public class StoreService implements IStoreService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         store.setEmail_manager(email);
-        store.setEKyc(storeRequest.getEKyc());
         store.setCreatedAt(ProcessUtils.getCurrentDay());
         store.setUpdatedAt(ProcessUtils.getCurrentDay());
         store.setEvaluate(5);
@@ -120,6 +119,22 @@ public class StoreService implements IStoreService {
                 "</html>";
         emailMix.sendContentToVer2(store.getEmail_manager(),"Kích hoạt Cửa hàng : ".concat(store.getStoreName()),body);
         storeRepository.save(store);
+    }
+
+    @Override
+    public void WarningStore(String email_manager, String message) {
+        EmailMix emailMix= new EmailMix("myEmail","emailpassword16",0);
+        String body = "<html>" +
+                "<body>" +
+                "<h1>Xin chào,</h1>" +
+                "<p>Kính gửi <strong>" + email_manager + "</strong>.Cửa hàng của bạn đã bị nhắc nhở.</p>" +
+                "<p>Nội dung  là: <strong>" + message + "</strong></p>" +
+                "<p>Vui lòng cân nhắc và phản hồi nếu có sai phạm ảnh hưởng đến lợi ích của bạn.</p>" +
+                "<p>Trân trọng,</p>" +
+                "<p>Đội ngũ hỗ trợ</p>" +
+                "</body>" +
+                "</html>";
+        emailMix.sendContentToVer2(email_manager,"Thông báo cảnh cáo ! ",body);
     }
 
 }
