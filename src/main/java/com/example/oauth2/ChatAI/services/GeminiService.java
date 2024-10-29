@@ -21,7 +21,11 @@ public class GeminiService {
     private static final String GEMINI_MODEL = "gemini-1.5-flash";
 
     private static final String API_KEY ="AIzaSyDU0RF0g4cMJEBEXsCZ85feu7MEEkODv1U";
-    private String conversationHistory = "Thường 12 tuổi";
+    private String conversationHistory = "Bạn chỉ trả lời dựa trên những thông tin sau : "+
+            "/n"+
+            "Nếu không có thông tin trong số những gì tôi viết dưới đây thì báo : không có dữ liệu"+
+            "/n"+
+            "";
     public String chat(String prompt) {
 
         //Adding previous conversation history
