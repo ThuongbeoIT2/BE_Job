@@ -29,10 +29,18 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, IOException {
         try {
-            if (request.getServletPath().contains("/auth")|| request.getServletPath().contains("/validtoken")|| request.getServletPath().contains("/api/v1/notifications")) {
+            System.out.println(request.getServletPath());
+            if (request.getServletPath().contains("/auth")
+                    || request.getServletPath().contains("/validtoken")
+                    || request.getServletPath().contains("/topic")
+                    || request.getServletPath().contains("/chat")
+                    || request.getServletPath().contains("/chat-socket")
+                    || request.getServletPath().contains("/api/v1/notifications")) {
                 filterChain.doFilter(request, response);
+
                 return;
             }
+
             String jwt = getJwtFromRequest(request);
             System.out.println(jwt);
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
@@ -46,7 +54,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception ex) {
             logger.error("Could not set user authentication in security context", ex);
         }
-
         filterChain.doFilter(request, response);
     }
 

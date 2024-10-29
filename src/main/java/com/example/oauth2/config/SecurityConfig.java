@@ -118,10 +118,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.",
                         "/**/*.css",
                         "/**/*.js",
-                        "/ws/**")
-                .permitAll()
-                .antMatchers("/auth/**", "/oauth2/**","/validtoken"
-                )
+                        "/ws/**",
+                        "/auth/**", "/oauth2/**","/validtoken","/topic/**","/chat/**","/chat-socket/**")
                 .permitAll()
                 .antMatchers("/storetype/delete/**").hasRole("ADMIN")
                 .anyRequest()
