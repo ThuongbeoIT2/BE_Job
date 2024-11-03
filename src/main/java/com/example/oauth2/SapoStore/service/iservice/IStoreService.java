@@ -13,11 +13,11 @@ import java.util.UUID;
 
 public interface IStoreService {
     Page<StoreResponse> findAll(Pageable pageable);
-    Optional<Store> findStoreBystoreCode(UUID storeCode);
-    Optional<StoreResponse> findStoreByCode(UUID storeCode);
+    Optional<Store> findStoreBystoreCode(String storeCode);
+    Optional<StoreResponse> findStoreByCode(String storeCode);
     Page<StoreResponse> getStoreByType(String slug, Pageable pageable);
 
-    Page<StoreResponse> getStoreByEmailManager(String email, Pageable pageable);
+    Optional<StoreResponse> getStoreByEmailManager(String email);
 
     Page<StoreResponse> searchStoreByKey(String key, Pageable pageable);
     void Save(Store store);

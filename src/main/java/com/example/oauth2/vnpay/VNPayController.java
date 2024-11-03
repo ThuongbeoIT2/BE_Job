@@ -1,5 +1,7 @@
 package com.example.oauth2.vnpay;
 
+import com.example.oauth2.SapoStore.model.*;
+import com.example.oauth2.SapoStore.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +15,18 @@ import java.util.Map;
 public class VNPayController {
     @Autowired
     private VNPayService vnPayService;
-
+    @Autowired
+    private TransactionVNPayRepository transactionVNPayRepository;
+    @Autowired
+    private ProductOfStoreRepository productOfStoreRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+    @Autowired
+    private BillPaymentRepository billPaymentRepository;
+    @Autowired
+    private OrderStatusRepository orderStatusRepository;
+    @Autowired
+    private PaymentMethodRepository paymentMethodRepository;
 
 
     @PostMapping("/submitOrder")
@@ -55,7 +68,29 @@ public class VNPayController {
         response.setVnp_TransactionStatus(vnp_TransactionStatus);
         response.setVnp_TxnRef(vnp_TxnRef);
         response.setVnp_SecureHash(vnp_SecureHash);
-
+        /* By pass cho giao dịch thanh toán */
+        String orderID = vnp_OrderInfo;
+        TransactionVNPay transactionVNPay = transactionVNPayRepository.findByOrderID(orderID).get();
+        long now =System.currentTimeMillis();
+        transactionVNPay.setEndTransactionTime(now);
+        transactionVNPay.setResultCode(vnp_ResponseCode);
+        transactionVNPay.setResultDesc("Thành Công");
+        transactionVNPay.setCustomerAccountLink("Giả lập");
+        transactionVNPay.setShopAccountLink("Giả lập");
+        transactionVNPayRepository.save(transactionVNPay);
+        OrderDetail orderDetail= orderDetailRepository.findById(Long.valueOf(orderID)).get();
+        ProductOfStore productOfStore= orderDetail.getProductOfStore();
+        orderDetail.setIsPayment("1");
+        orderDetailRepository.save(orderDetail);
+        productOfStore.setQuantity(productOfStore.getQuantity()-orderDetail.getQuantity());
+        productOfStoreRepository.save(productOfStore);
+        BillPayment billPayment= billPaymentRepository.findByOrderID(orderID).get();
+        billPayment.setTransID(transactionVNPay.getTransID());
+        billPayment.setOrderStatus(orderStatusRepository.findById(1).get());
+        billPayment.setPayment(true);
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(1).get();
+        billPayment.setPaymentMethod(paymentMethod);
+        billPaymentRepository.save(billPayment);
         // Ở đây bạn có thể thêm logic để xử lý thanh toán như kiểm tra chữ ký, cập nhật trạng thái đơn hàng, v.v.
 
         return ResponseEntity.ok(response);

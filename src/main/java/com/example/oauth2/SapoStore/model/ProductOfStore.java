@@ -17,13 +17,17 @@ import java.util.Set;
 @NoArgsConstructor
 public class ProductOfStore {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long priceI;
     private Long priceO;
     private double discount;
     private String CU="VND";
     private long view;
+    private int quantity;
+    private double evaluate;
     private boolean status;
+    private String description;
     @OneToMany
     private List<OrderDetail> orderDetails;
     @ManyToOne

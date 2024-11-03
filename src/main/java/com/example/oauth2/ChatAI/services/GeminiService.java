@@ -19,13 +19,17 @@ public class GeminiService {
     private static final Logger logger = LoggerFactory.getLogger(GeminiService.class);
 
     private static final String GEMINI_MODEL = "gemini-1.5-flash";
+    String dataProduct ="";
+    String dataStore ="";
+    String dataProductOS="";
+    String dataSystem="";
 
     private static final String API_KEY ="AIzaSyDU0RF0g4cMJEBEXsCZ85feu7MEEkODv1U";
     private String conversationHistory = "Bạn chỉ trả lời dựa trên những thông tin sau : "+
             "/n"+
-            "Nếu không có thông tin trong số những gì tôi viết dưới đây thì báo : không có dữ liệu"+
+            "Nếu không có thông tin trong số những gì tôi viết dưới đây thì báo :Xin lỗi! Chúng tôi không có dữ liệu về câu hỏi của bạn. Vui lòng hỏi rõ hơn!"+
             "/n"+
-            "";
+            "Khi khách chào mình thì mình chào lại bằng đúng ngôn ngữ đó ";
     public String chat(String prompt) {
 
         //Adding previous conversation history

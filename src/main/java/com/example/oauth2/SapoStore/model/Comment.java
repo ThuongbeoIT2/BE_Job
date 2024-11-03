@@ -14,6 +14,7 @@ import java.util.Date;
 @Builder
 public class Comment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long cmtId;
     private String description;
     private String avatar_user;

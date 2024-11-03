@@ -16,11 +16,11 @@ import java.util.UUID;
 public interface StoreRepository extends JpaRepository<Store,Long> {
     Page<Store> findAll(Pageable pageable);
     @Query("select o from store o where o.storeCode=:storeCode")
-    Optional<Store> findStoreByCode(UUID storeCode);
+    Optional<Store> findStoreByCode(String storeCode);
     @Query("select o from store o where o.storetype.slug=:slug")
     Page<Store> getStoreByType(String slug, Pageable pageable);
     @Query("select o from store o where o.email_manager=:email")
-    Page<Store> getStoreByEmailManager(String email, Pageable pageable);
+    Optional<Store> getStoreByEmailManager(String email);
     @Query("select o from store o where o.storeName like %:key%")
     Page<Store> searchStoreByKey(String key, Pageable pageable);
 }

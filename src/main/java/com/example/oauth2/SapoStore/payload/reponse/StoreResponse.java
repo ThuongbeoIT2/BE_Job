@@ -12,7 +12,7 @@ import java.util.UUID;
 public class StoreResponse {
     private Long storeId;
 
-    private UUID storeCode;
+    private String storeCode;
 
     private String storeName;
 
@@ -25,6 +25,7 @@ public class StoreResponse {
     private String ekyc_01;
     private String ekyc_02;
     private String description;
+    private String VNPauAccountLink;
     private boolean status;
     private double evaluate;
     private Date createdAt;
@@ -42,6 +43,7 @@ public class StoreResponse {
         storeResponse.setEmail_manager(store.getEmail_manager());
         storeResponse.setPhoneNumber(store.getPhoneNumber());
         storeResponse.setThumbnail(store.getThumbnail());
+        storeResponse.setVNPauAccountLink(store.getVNPayAccountLink());
         storeResponse.setDescription(store.getDescription());
         storeResponse.setStatus(store.isStatus());
         storeResponse.setEvaluate(store.getEvaluate());

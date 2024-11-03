@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,13 +32,13 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
-    public Page<OrderDetailResponse> getOrderDetailByStore(UUID storeCode,Pageable pageable) {
+    public Page<OrderDetailResponse> getOrderDetailByStore(String storeCode,Pageable pageable) {
         return orderDetailRepository.getOrderDetailByStore(storeCode,pageable).map(OrderDetailResponse::cloneFromOrderDetail);
     }
 
     @Override
-    public Page<OrderDetailResponse> getOrderDetailByProduct(long id, Pageable pageable) {
-        return orderDetailRepository.getOrderDetailByProduct(id, pageable).map(OrderDetailResponse::cloneFromOrderDetail);
+    public Page<OrderDetailResponse> getOrderDetailByProduct(long id, Pageable pageable,String storeCode) {
+        return orderDetailRepository.getOrderDetailByProduct(id, pageable,storeCode).map(OrderDetailResponse::cloneFromOrderDetail);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class OrderDetailService implements IOrderDetailService {
         orderDetail.setProductOfStore(orderDetailRequest.getProductOfStore());
         orderDetail.setPrice_total(orderDetailRequest.getQuantity()*orderDetailRequest.getProductOfStore().getPriceO());
         orderDetail.setCreatedAt(ProcessUtils.getCurrentDay());
-        orderDetail.setCart(findCartByUser());
+        orderDetail.setEmailCustomer(SecurityContextHolder.getContext().getAuthentication().getName());
         orderDetailRepository.save(orderDetail);
     }
 
@@ -72,6 +73,11 @@ public class OrderDetailService implements IOrderDetailService {
     @Override
     public void delete(OrderDetail orderDetail) {
         orderDetailRepository.delete(orderDetail);
+    }
+
+    @Override
+    public Optional<OrderDetail> getProductOSByUser(long productOSID, String emailCustomer) {
+        return orderDetailRepository.getProductOSByUser(productOSID,emailCustomer);
     }
 
 

@@ -8,15 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
     Page<OrderDetail> findAll(Pageable pageable);
     @Query("select o from orderdetail o where o.productOfStore.store.storeCode=:storeCode")
-    Page<OrderDetail> getOrderDetailByStore(UUID storeCode,Pageable pageable);
-    @Query("select o from orderdetail  o where o.productOfStore.id=:id order by o.createdAt desc")
-    Page<OrderDetail> getOrderDetailByProduct(long id,Pageable pageable);
-    @Query("select o from orderdetail  o where o.cart.user.email=:email order by o.createdAt desc ")
+    Page<OrderDetail> getOrderDetailByStore(String storeCode,Pageable pageable);
+    @Query("select o from orderdetail  o where o.productOfStore.id=:id and o.productOfStore.store.storeCode=:storeCode order by o.createdAt desc")
+    Page<OrderDetail> getOrderDetailByProduct(long id,Pageable pageable,String storeCode);
+    @Query("select o from orderdetail  o where o.emailCustomer=:email order by o.createdAt desc ")
     List<OrderDetail> getOrderDetailByUser(String email);
-
+    @Query("select o from orderdetail o where o.productOfStore.id=:productOSID and o.emailCustomer=:emailCustomer")
+    Optional<OrderDetail> getProductOSByUser(long productOSID, String emailCustomer);
 }

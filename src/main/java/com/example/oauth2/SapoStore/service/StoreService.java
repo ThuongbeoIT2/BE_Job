@@ -32,12 +32,12 @@ public class StoreService implements IStoreService {
     }
 
     @Override
-    public Optional<Store> findStoreBystoreCode(UUID storeCode) {
+    public Optional<Store> findStoreBystoreCode(String storeCode) {
         return storeRepository.findStoreByCode(storeCode);
     }
 
     @Override
-    public Optional<StoreResponse> findStoreByCode(UUID storeCode) {
+    public Optional<StoreResponse> findStoreByCode(String storeCode) {
         return storeRepository.findStoreByCode(storeCode).map(StoreResponse::cloneFromStore);
     }
 
@@ -47,8 +47,8 @@ public class StoreService implements IStoreService {
     }
 
     @Override
-    public Page<StoreResponse> getStoreByEmailManager(String email, Pageable pageable) {
-        return storeRepository.getStoreByEmailManager(email, pageable).map(StoreResponse::cloneFromStore);
+    public Optional<StoreResponse> getStoreByEmailManager(String email) {
+        return storeRepository.getStoreByEmailManager(email).map(StoreResponse::cloneFromStore);
     }
 
     @Override
@@ -64,11 +64,12 @@ public class StoreService implements IStoreService {
     @Override
     public void insert(StoreRequest storeRequest) {
         Store store = new Store();
-        store.setStoreCode(UUID.randomUUID());
+        store.setStoreCode(ProcessUtils.generateStoreCode());
         store.setStoreName(storeRequest.getStoreName());
         store.setAddress(storeRequest.getAddress());
         store.setDescription(storeRequest.getDescription());
         store.setStatus(false);
+        store.setVNPayAccountLink(storeRequest.getVNPayAccountLink());
         store.setPhoneNumber(storeRequest.getPhoneNumber());
         store.setThumbnail(storeRequest.getThumbnail());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -78,14 +79,19 @@ public class StoreService implements IStoreService {
         store.setUpdatedAt(ProcessUtils.getCurrentDay());
         store.setEvaluate(5);
         store.setView(0);
+        store.setEKyc_01(storeRequest.getEKyc_01());
+        store.setEKyc_02(storeRequest.getEKyc_02());
+        store.setThumbnail(storeRequest.getThumbnail());
         store.setStoretype(storeRequest.getStoreType());
         storeRepository.save(store);
+        ACPStore(store);
     }
 
     @Override
     public void update(StoreRequest storeRequest, Store store) {
         store.setStoreName(storeRequest.getStoreName());
         store.setAddress(storeRequest.getAddress());
+        store.setVNPayAccountLink(storeRequest.getVNPayAccountLink());
         store.setDescription(storeRequest.getDescription());
         store.setPhoneNumber(storeRequest.getPhoneNumber());
         store.setUpdatedAt(ProcessUtils.getCurrentDay());
@@ -106,7 +112,7 @@ public class StoreService implements IStoreService {
         String otp= ProcessUtils.generateTempPwd(6);
         store.setStatus(true);
         store.setPassword(passwordEncoder.encode(otp));
-        EmailMix emailMix= new EmailMix("myEmail","emailpassword16",0);
+        EmailMix emailMix= new EmailMix("thuong0205966@huce.edu.vn","ypnyjaakkzrbbjyl",0);
         String body = "<html>" +
                 "<body>" +
                 "<h1>Xin chào,</h1>" +
@@ -123,7 +129,7 @@ public class StoreService implements IStoreService {
 
     @Override
     public void WarningStore(String email_manager, String message) {
-        EmailMix emailMix= new EmailMix("myEmail","emailpassword16",0);
+        EmailMix emailMix= new EmailMix("thuong0205966@huce.edu.vn","ypnyjaakkzrbbjyl",0);
         String body = "<html>" +
                 "<body>" +
                 "<h1>Xin chào,</h1>" +

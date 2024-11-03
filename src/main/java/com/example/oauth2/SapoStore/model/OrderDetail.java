@@ -22,10 +22,13 @@ public class OrderDetail {
     private Date createdAt;
     @Column(nullable = false)
     private long price_total;
+    @Column(nullable = false)
+    private boolean VNPAY;
+    @Column(nullable = false)
+    private String emailCustomer;
+    @Column
+    private  String isPayment;
     @ManyToOne
     @JoinColumn(name = "pos")
     private ProductOfStore productOfStore;
-    @ManyToOne
-    @JoinColumn(name = "order_detail_id")
-    private Cart cart;
 }

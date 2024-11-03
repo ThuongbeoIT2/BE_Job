@@ -22,6 +22,5 @@ public class Cart {
     @OneToOne
     @JoinColumn(name = "userId")
     private User user;
-    @OneToMany
-    private Set<OrderDetail> orderDetails;
+
 }

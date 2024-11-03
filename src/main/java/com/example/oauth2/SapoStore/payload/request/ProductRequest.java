@@ -9,6 +9,7 @@ public class ProductRequest {
     private String proName;
     private String slug;
     private String thumbnail;
+    private int quantity;
     private String description;
     private String category;
 

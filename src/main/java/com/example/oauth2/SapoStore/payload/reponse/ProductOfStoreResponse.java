@@ -12,15 +12,19 @@ import java.util.UUID;
 public class ProductOfStoreResponse {
     private Long id;
     private Long priceO;
+    private Long priceI;
     private double discount;
     private String CU = "VND";
     private long view;
     private boolean status;
     private String proName;
+    private String description;
+    private int quantity;
+    private double evaluate;
     private String slug;
     private String category;
     private String storeName;
-    private UUID storeCode;
+    private String storeCode;
 
     public static ProductOfStoreResponse cloneFromProductOfStore(ProductOfStore productOfStore) {
         ProductOfStoreResponse productOfStoreResponse = new ProductOfStoreResponse();
@@ -28,6 +32,8 @@ public class ProductOfStoreResponse {
         productOfStoreResponse.setPriceO(productOfStore.getPriceO());
         productOfStoreResponse.setDiscount(productOfStore.getDiscount());
         productOfStoreResponse.setCU("VND");
+        productOfStoreResponse.setPriceI(productOfStore.getPriceI());
+        productOfStoreResponse.setDescription(productOfStore.getDescription());
         productOfStoreResponse.setView(productOfStore.getView());
         productOfStoreResponse.setStatus(productOfStore.isStatus());
         productOfStoreResponse.setProName(productOfStore.getProduct().getProName());
@@ -35,7 +41,8 @@ public class ProductOfStoreResponse {
         productOfStoreResponse.setCategory(productOfStore.getProduct().getCategory().getCateName());
         productOfStoreResponse.setStoreName(productOfStore.getStore().getStoreName());
         productOfStoreResponse.setStoreCode(productOfStore.getStore().getStoreCode());
-
+        productOfStoreResponse.setEvaluate(productOfStore.getEvaluate());
+        productOfStoreResponse.setQuantity(productOfStore.getQuantity());
         return productOfStoreResponse;
     }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class OrderStatus {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int statusId;
     @Column(unique = true)
     private String Status;

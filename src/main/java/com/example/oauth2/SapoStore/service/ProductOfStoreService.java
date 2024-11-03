@@ -2,6 +2,7 @@ package com.example.oauth2.SapoStore.service;
 
 import com.example.oauth2.SapoStore.model.ProductOfStore;
 import com.example.oauth2.SapoStore.model.ProductOfStoreImage;
+import com.example.oauth2.SapoStore.page.SapoPageRequest;
 import com.example.oauth2.SapoStore.payload.reponse.ProductOSImageResponse;
 import com.example.oauth2.SapoStore.payload.reponse.ProductOfStoreResponse;
 import com.example.oauth2.SapoStore.payload.request.ProductOSImageRequest;
@@ -85,23 +86,23 @@ public class ProductOfStoreService implements IProductOfStoreService {
     }
 
     @Override
-    public Page<ProductOfStoreResponse> findProductOfStoreByStore(UUID storeCode, Pageable pageable) {
+    public Page<ProductOfStoreResponse> findProductOfStoreByStore(String storeCode, Pageable pageable) {
         return productOfStoreRepository.findProductByStore(storeCode, pageable).map(ProductOfStoreResponse::cloneFromProductOfStore);
     }
 
     @Override
-    public Optional<ProductOfStore> isExistProductOfStore(String slug, UUID storeCode) {
+    public Optional<ProductOfStore> isExistProductOfStore(String slug, String storeCode) {
         return productOfStoreRepository.isExistProductOfStore(slug,storeCode);
     }
 
 
     @Override
-    public Page<ProductOfStoreResponse> getProductByCategoryandStore(String slug, UUID storeCode, Pageable pageable) {
+    public Page<ProductOfStoreResponse> getProductByCategoryandStore(String slug, String storeCode, Pageable pageable) {
         return productOfStoreRepository.getProductByCategoryandStore(slug, storeCode, pageable).map(ProductOfStoreResponse::cloneFromProductOfStore);
     }
 
     @Override
-    public Page<ProductOfStoreResponse> searchProductOfStoreByKey(String key, UUID storeCode, Pageable pageable) {
+    public Page<ProductOfStoreResponse> searchProductOfStoreByKey(String key, String storeCode, Pageable pageable) {
         return productOfStoreRepository.searchProductOfStoreByKey(key, storeCode, pageable).map(ProductOfStoreResponse::cloneFromProductOfStore);
     }
 
@@ -119,7 +120,9 @@ public class ProductOfStoreService implements IProductOfStoreService {
         productOfStore.setCU("VND");
         productOfStore.setProductOfStoreImages(new HashSet<>());
         productOfStore.setStatus(true);
+        productOfStore.setQuantity(productOfStoreRequest.getQuantity());
         productOfStore.setComments(new HashSet<>());
+        productOfStore.setDescription(productOfStoreRequest.getDescription());
         productOfStore.setPriceI(productOfStoreRequest.getPriceI());
         productOfStore.setPriceO(productOfStoreRequest.getPriceO());
         productOfStore.setDiscount(productOfStoreRequest.getDiscount());
@@ -130,6 +133,9 @@ public class ProductOfStoreService implements IProductOfStoreService {
     public void update(ProductOfStoreRequest productOfStoreRequest, ProductOfStore productOfStore) {
         productOfStore.setDiscount(productOfStoreRequest.getDiscount());
         productOfStore.setPriceO(productOfStoreRequest.getPriceO());
+        productOfStore.setQuantity(productOfStoreRequest.getQuantity());
+        productOfStore.setDescription(productOfStoreRequest.getDescription());
+        productOfStore.setDiscount(productOfStoreRequest.getDiscount());
         productOfStoreRepository.save(productOfStore);
     }
 
@@ -143,5 +149,10 @@ public class ProductOfStoreService implements IProductOfStoreService {
     public void softDelete(ProductOfStore productOfStore) {
         productOfStore.setStatus(false);
         productOfStoreRepository.save(productOfStore);
+    }
+
+    @Override
+    public Page<ProductOfStoreResponse> getListProductOfStoreBySlug(String slug, SapoPageRequest sapoPageRequest) {
+        return productOfStoreRepository.getProductOfStoreBySlug(slug,sapoPageRequest).map(ProductOfStoreResponse::cloneFromProductOfStore);
     }
 }

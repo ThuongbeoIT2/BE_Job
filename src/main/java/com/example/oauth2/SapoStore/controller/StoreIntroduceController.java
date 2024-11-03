@@ -24,7 +24,7 @@ public class StoreIntroduceController {
     @Autowired
     private IStoreService iStoreService;
     @PostMapping(value = "/insert/{storeCode}")
-    ResponseEntity<ApiResponse> insertStoreIntroduce(@PathVariable UUID storeCode,
+    ResponseEntity<ApiResponse> insertStoreIntroduce(@PathVariable String storeCode,
                                                      @RequestParam String title,
                                                      @RequestParam String description,
                                                      @RequestParam String link_facebook,
@@ -52,7 +52,7 @@ public class StoreIntroduceController {
         return ResponseEntity.badRequest().body(new ApiResponse("FAILED",GlobalConstant.ResultResponse.FAILURE,""));
     }
     @PostMapping(value = "/update/{storeCode}")
-    ResponseEntity<ApiResponse> updateStoreIntroduce(@PathVariable UUID storeCode,
+    ResponseEntity<ApiResponse> updateStoreIntroduce(@PathVariable String storeCode,
                                                 @RequestParam String title,
                                                 @RequestParam String description,
                                                 @RequestParam String link_facebook,
@@ -79,7 +79,7 @@ public class StoreIntroduceController {
         return ResponseEntity.badRequest().body(new ApiResponse("FAILED",GlobalConstant.ResultResponse.FAILURE,""));
     }
     @GetMapping(value = "/view/{storeCode}")
-    ResponseEntity<StoreIntroduce> viewIntroduce(@PathVariable UUID storeCode){
+    ResponseEntity<StoreIntroduce> viewIntroduce(@PathVariable String storeCode){
         Optional<Store> store = iStoreService.findStoreBystoreCode(storeCode);
         if (store.isEmpty()){
             throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORE,GlobalConstant.ErrorCode.MER404);

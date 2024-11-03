@@ -12,5 +12,7 @@ public class StoreRequest {
     private String description;
     private String eKyc_01;
     private String eKyc_02;
+    private String VNPayAccountLink;
+
     private StoreType storeType;
 }

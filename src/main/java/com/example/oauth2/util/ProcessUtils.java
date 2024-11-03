@@ -17,9 +17,17 @@ public class ProcessUtils {
         }
         return optCode;
     }
-
+    public static String generateStoreCode() {
+        Random random = new Random();
+        int randomPart = 100000 + random.nextInt(900000);
+        return "SAPO" + randomPart;
+    }
     public static Date getCurrentDay() {
         Date currentDate = new Date();
         return new Date(currentDate.getTime());
+    }
+    public static long getMiliseconds(){
+        long now = System.currentTimeMillis();
+        return now;
     }
 }

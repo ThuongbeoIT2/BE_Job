@@ -22,8 +22,8 @@ public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long storeId;
-    @Column(columnDefinition = "BINARY(16)", updatable = false, nullable = false)
-    private UUID storeCode;
+    @Column(unique = true)
+    private String storeCode;
     @Column(nullable = false)
     private String storeName;
     @Column(nullable = false)
@@ -37,6 +37,7 @@ public class Store {
     private String password;
     private String thumbnail;
     private String description;
+    private String VNPayAccountLink;
     private boolean status;
     private double evaluate;
     private Date createdAt;

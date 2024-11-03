@@ -11,6 +11,8 @@ public class ProductOfStoreRequest {
     private Long priceI;
     private Long priceO;
     private double discount;
+    private int quantity;
+    private String description;
     private Product product;
     private Store store;
 

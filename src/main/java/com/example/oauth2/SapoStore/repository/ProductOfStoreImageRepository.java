@@ -12,6 +12,6 @@ import java.util.List;
 public interface ProductOfStoreImageRepository extends JpaRepository<ProductOfStoreImage,Long> {
     @Query("select o from productofstoreimage o where o.productOfStore.id=:id")
     List<ProductOfStoreImage> getAllProductOfStoreImageByProduct(long id);
-    @Query("select o from productofstoreimage o where o.productOfStore.id=:id and o.status=true")
+    @Query("select o from productofstoreimage o where o.productOfStore.id=:id ")
     List<ProductOfStoreImage> getProductOfStoreImageByProduct(long id);
 }
