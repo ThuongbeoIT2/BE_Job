@@ -51,11 +51,19 @@ public class AuthController {
         }
         return  ResponseEntity.ok(false);
     }
+//    @PostMapping("/auth/login")
+//    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+//        return getResponseEntity(loginRequest);
+//    }
+
     @PostMapping("/auth/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser( @RequestParam String email,
+                                               @RequestParam String password) {
+        LoginRequest loginRequest= new LoginRequest();
+        loginRequest.setEmail(email);
+        loginRequest.setPassword(password);
         return getResponseEntity(loginRequest);
     }
-   
 
     private ResponseEntity<?> getResponseEntity(@RequestBody @Valid LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(

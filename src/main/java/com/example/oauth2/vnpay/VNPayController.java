@@ -68,7 +68,7 @@ public class VNPayController {
         response.setVnp_TransactionStatus(vnp_TransactionStatus);
         response.setVnp_TxnRef(vnp_TxnRef);
         response.setVnp_SecureHash(vnp_SecureHash);
-        /* By pass cho giao dịch thanh toán */
+        /* By pass thành công cho giao dịch thanh toán . Sau còn đảm bảo giao dịch được gửi vào đúng shopAccountLink */
         String orderID = vnp_OrderInfo;
         TransactionVNPay transactionVNPay = transactionVNPayRepository.findByOrderID(orderID).get();
         long now =System.currentTimeMillis();
@@ -92,7 +92,8 @@ public class VNPayController {
         billPayment.setPaymentMethod(paymentMethod);
         billPaymentRepository.save(billPayment);
         // Ở đây bạn có thể thêm logic để xử lý thanh toán như kiểm tra chữ ký, cập nhật trạng thái đơn hàng, v.v.
-
+        // Trong trường hợp giao dịch thất bại (Khách hàng chưa thanh toán. VNPAYsession hết hạn thì hoàn hàng lại.)
+        // Trong trường hợp chuyển tiền thành công rồi thì coi như full luồng. Nếu có lỗi bên BE mình thì sẽ validateTransacionError();
         return ResponseEntity.ok(response);
     }
 

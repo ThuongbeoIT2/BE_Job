@@ -29,5 +29,6 @@ public class TransactionVNPay {
     private long amount;
     private String customerAccountLink;
     private String shopAccountLink;
+    private String isPaymentByShipper;
 
 }

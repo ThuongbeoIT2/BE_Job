@@ -24,6 +24,8 @@ public class OrderDetail {
     private long price_total;
     @Column(nullable = false)
     private boolean VNPAY;
+    @Column
+    private String initOrderStatus;
     @Column(nullable = false)
     private String emailCustomer;
     @Column
