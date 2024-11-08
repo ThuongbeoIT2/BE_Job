@@ -128,7 +128,7 @@ public class VNPayService {
         transactionVNPay.setIsPaymentByShipper("0");
         OrderDetail orderDetail= orderDetailRepository.findById(orderID).get();
         ProductOfStore productOfStore= orderDetail.getProductOfStore();
-        orderDetail.tatus("1");
+        orderDetail.setIsPayment("1");
         productOfStore.setQuantity(productOfStore.getQuantity()-orderDetail.getQuantity());
         BillPayment billPayment= billPaymentRepository.findByOrderID(orderID).get();
         billPayment.setTransID(transactionVNPay.getTransID());
