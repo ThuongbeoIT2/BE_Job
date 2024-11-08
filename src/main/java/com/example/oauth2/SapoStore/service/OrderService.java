@@ -80,7 +80,6 @@ public class OrderService {
 
     public TransactionVNPay initTransactionPaymentVNPay(OrderDetail orderDetail) {
         TransactionVNPay transactionVNPay = new TransactionVNPay();
-        transactionVNPay.setTransID(UUID.randomUUID());
         transactionVNPay.setShopAccountLink(orderDetail.getProductOfStore().getStore().getVNPayAccountLink());
         transactionVNPay.setIntTransactionTime(ProcessUtils.getMiliseconds());
         transactionVNPay.setOrderId(orderDetail.getId());

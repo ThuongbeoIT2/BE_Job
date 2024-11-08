@@ -16,7 +16,7 @@ public class BillPayment{
     private Long billID;
     private long orderID;
     private boolean isPayment;
-    private UUID transID;
+    private long transID;
     @ManyToOne
     @JoinColumn(name = "methodId")
     private PaymentMethod paymentMethod;

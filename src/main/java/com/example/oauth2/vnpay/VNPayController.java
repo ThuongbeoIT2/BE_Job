@@ -4,6 +4,7 @@ import com.example.oauth2.SapoStore.model.*;
 import com.example.oauth2.SapoStore.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,22 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-
 public class VNPayController {
     @Autowired
     private VNPayService vnPayService;
-    @Autowired
-    private TransactionVNPayRepository transactionVNPayRepository;
-    @Autowired
-    private ProductOfStoreRepository productOfStoreRepository;
-    @Autowired
-    private OrderDetailRepository orderDetailRepository;
-    @Autowired
-    private BillPaymentRepository billPaymentRepository;
-    @Autowired
-    private OrderStatusRepository orderStatusRepository;
-    @Autowired
-    private PaymentMethodRepository paymentMethodRepository;
+
+
 
 
     @PostMapping("/submitOrder")
@@ -39,6 +29,21 @@ public class VNPayController {
         response.put("redirectUrl", vnpayUrl);
         return ResponseEntity.ok(response);
     }
+    /*
+    * http://localhost:8080/vnpay-payment?
+    * vnp_Amount=1980000
+    * &vnp_BankCode=NCB
+    * &vnp_BankTranNo=VNP14650640
+    * &vnp_CardType=ATM
+    * &vnp_OrderInfo=412
+    * &vnp_PayDate=20241104222301
+    * &vnp_ResponseCode=00
+    * &vnp_TmnCode=V5J6TT7T
+    * &vnp_TransactionNo=14650640
+    * &vnp_TransactionStatus=00
+    * &vnp_TxnRef=20047956
+    * &vnp_SecureHash=22a4244466ec6e907d59e81466b8670470d8a9a73238532688f27ce7731fa49ce8a3f9b1c4a44c01299504894c88a4310cc6c467ff3d14d9e6b94404de765fe6
+    * */
     @GetMapping("/vnpay-payment")
     public ResponseEntity<PaymentResponse> handleVNPayPayment(
             @RequestParam long vnp_Amount,
@@ -70,27 +75,7 @@ public class VNPayController {
         response.setVnp_SecureHash(vnp_SecureHash);
         /* By pass thành công cho giao dịch thanh toán . Sau còn đảm bảo giao dịch được gửi vào đúng shopAccountLink */
         String orderID = vnp_OrderInfo;
-        TransactionVNPay transactionVNPay = transactionVNPayRepository.findByOrderID(orderID).get();
-        long now =System.currentTimeMillis();
-        transactionVNPay.setEndTransactionTime(now);
-        transactionVNPay.setResultCode(vnp_ResponseCode);
-        transactionVNPay.setResultDesc("Thành Công");
-        transactionVNPay.setCustomerAccountLink("Giả lập");
-        transactionVNPay.setShopAccountLink("Giả lập");
-        transactionVNPayRepository.save(transactionVNPay);
-        OrderDetail orderDetail= orderDetailRepository.findById(Long.valueOf(orderID)).get();
-        ProductOfStore productOfStore= orderDetail.getProductOfStore();
-        orderDetail.setIsPayment("1");
-        orderDetailRepository.save(orderDetail);
-        productOfStore.setQuantity(productOfStore.getQuantity()-orderDetail.getQuantity());
-        productOfStoreRepository.save(productOfStore);
-        BillPayment billPayment= billPaymentRepository.findByOrderID(orderID).get();
-        billPayment.setTransID(transactionVNPay.getTransID());
-        billPayment.setOrderStatus(orderStatusRepository.findById(1).get());
-        billPayment.setPayment(true);
-        PaymentMethod paymentMethod = paymentMethodRepository.findById(1).get();
-        billPayment.setPaymentMethod(paymentMethod);
-        billPaymentRepository.save(billPayment);
+        vnPayService.handleTransaction(Long.parseLong(orderID),vnp_ResponseCode);
         // Ở đây bạn có thể thêm logic để xử lý thanh toán như kiểm tra chữ ký, cập nhật trạng thái đơn hàng, v.v.
         // Trong trường hợp giao dịch thất bại (Khách hàng chưa thanh toán. VNPAYsession hết hạn thì hoàn hàng lại.)
         // Trong trường hợp chuyển tiền thành công rồi thì coi như full luồng. Nếu có lỗi bên BE mình thì sẽ validateTransacionError();

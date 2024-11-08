@@ -119,6 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.css",
                         "/**/*.js",
                         "/ws/**",
+                        "/vnpay-payment",
                         "/auth/**", "/oauth2/**","/validtoken","/topic/**","/chat/**","/chat-socket/**")
                 .permitAll()
                 .antMatchers("/storetype/delete/**").hasRole("ADMIN")

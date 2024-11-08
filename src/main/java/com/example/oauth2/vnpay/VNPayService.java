@@ -1,5 +1,8 @@
 package com.example.oauth2.vnpay;
 
+import com.example.oauth2.SapoStore.model.*;
+import com.example.oauth2.SapoStore.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +13,18 @@ import java.util.*;
 
 @Service
 public class VNPayService {
-
+    @Autowired
+    private TransactionVNPayRepository transactionVNPayRepository;
+@Autowired
+    private ProductOfStoreRepository productOfStoreRepository;
+@Autowired
+    private OrderDetailRepository orderDetailRepository;
+@Autowired
+    private BillPaymentRepository billPaymentRepository;
+@Autowired
+    private OrderStatusRepository orderStatusRepository;
+@Autowired
+    private PaymentMethodRepository paymentMethodRepository;
     public String createOrder(int total, String orderInfor, String urlReturn){
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -101,6 +115,32 @@ public class VNPayService {
         } else {
             return -1;
         }
+    }
+
+    public void handleTransaction (long orderID,String vnp_ResponseCode){
+        TransactionVNPay transactionVNPay = transactionVNPayRepository.findByOrderID(orderID).get(0);
+        long now =System.currentTimeMillis();
+        transactionVNPay.setEndTransactionTime(now);
+        transactionVNPay.setResultCode(vnp_ResponseCode);
+        transactionVNPay.setResultDesc("Thành Công");
+        transactionVNPay.setCustomerAccountLink("Giả lập");
+        transactionVNPay.setShopAccountLink("Giả lập");
+        transactionVNPay.setIsPaymentByShipper("0");
+        OrderDetail orderDetail= orderDetailRepository.findById(orderID).get();
+        ProductOfStore productOfStore= orderDetail.getProductOfStore();
+        orderDetail.tatus("1");
+        productOfStore.setQuantity(productOfStore.getQuantity()-orderDetail.getQuantity());
+        BillPayment billPayment= billPaymentRepository.findByOrderID(orderID).get();
+        billPayment.setTransID(transactionVNPay.getTransID());
+        billPayment.setOrderStatus(orderStatusRepository.findById(1).get());
+        billPayment.setPayment(true);
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(1).get();
+        billPayment.setPaymentMethod(paymentMethod);
+
+        billPaymentRepository.save(billPayment);
+        orderDetailRepository.save(orderDetail);
+        productOfStoreRepository.save(productOfStore);
+        transactionVNPayRepository.save(transactionVNPay);
     }
 
 }

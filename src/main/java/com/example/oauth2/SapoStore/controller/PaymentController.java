@@ -145,7 +145,7 @@ private TransactionVNPayRepository transactionVNPayRepository;
 //
 //    }
 
-    @PostMapping(value = "payment-in-cart")
+    @PostMapping(value = "order-in-cart")
     public ResponseEntity<ApiResponse> PaymentInCart(@RequestParam long orderDetailID
                                               ) throws InterruptedException {
 
@@ -193,6 +193,11 @@ private TransactionVNPayRepository transactionVNPayRepository;
         orderDetail.get().setVNPAY(true);
             orderDetailRepository.save(orderDetail.get());
             orderService.initTransactionPaymentVNPay(orderDetail.get());
+            BillPayment billPayment= new BillPayment();
+
+            billPayment.setPayment(false);
+            billPayment.setOrderID(orderDetailID);
+            billPaymentRepository.save(billPayment);
             String redirectUrl = vnPayService.createOrder(
                     (int) orderDetail.get().getPrice_total(),
                     String.valueOf(orderDetail.get().getId()),
@@ -221,6 +226,7 @@ private TransactionVNPayRepository transactionVNPayRepository;
         OrderStatus orderStatus = orderStatusRepository.findById(2).get();
         billPayment.setOrderStatus(orderStatus);
         billPayment.setPayment(false);
+        billPayment.setOrderID(orderDetailID);
         billPaymentRepository.save(billPayment);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đơn hàng đã được vận chuyển",""));
     }

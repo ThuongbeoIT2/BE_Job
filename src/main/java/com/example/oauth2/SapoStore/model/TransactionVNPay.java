@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+
 import java.util.UUID;
 @Getter
 @Setter
@@ -12,7 +12,8 @@ import java.util.UUID;
 @Table(name = "transaction")
 public class TransactionVNPay {
     @Id
-    private UUID transID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long transID;
     @Column(nullable = false)
     private long intTransactionTime;
 

@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface BillPaymentRepository extends JpaRepository<BillPayment,Long> {
     @Query("select o from billpayment o where o.orderID=:orderID")
-    Optional<BillPayment> findByOrderID(String orderID);
+    Optional<BillPayment> findByOrderID(long orderID);
 }
