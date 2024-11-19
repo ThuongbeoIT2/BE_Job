@@ -15,6 +15,8 @@ public class OrderDetailResponse {
     private long price_total;
     private String productName;
     private String storeName;
+    private String initStatus;
+    private String isPayment;
     private Long priceO;
     private double discount;
     public static OrderDetailResponse cloneFromOrderDetail(OrderDetail orderDetail){
@@ -25,6 +27,8 @@ public class OrderDetailResponse {
         orderDetailResponse.setDiscount(orderDetail.getProductOfStore().getDiscount());
         orderDetailResponse.setProductName(orderDetail.getProductOfStore().getProduct().getProName());
         orderDetailResponse.setPriceO(orderDetail.getProductOfStore().getPriceO());
+        orderDetailResponse.setInitStatus(orderDetail.getInitOrderStatus());
+        orderDetailResponse.setIsPayment(orderDetail.getIsPayment());
         orderDetailResponse.setStoreName(orderDetail.getProductOfStore().getStore().getStoreName());
         return orderDetailResponse;
     }

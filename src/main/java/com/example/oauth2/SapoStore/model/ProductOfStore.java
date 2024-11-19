@@ -37,7 +37,7 @@ public class ProductOfStore {
     @JoinColumn(name = "storeId")
     private Store store;
     @OneToMany
-    private Set<ProductOfStoreImage> productOfStoreImages;
+    private List<ProductOfStoreImage> productOfStoreImages;
     @OneToMany
-    private Set<Comment>comments;
+    private List<Comment>comments;
 }

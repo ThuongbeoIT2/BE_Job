@@ -26,7 +26,8 @@ public class UserInfoResponse {
     private AuthProvider provider;
 
     private String providerId;
-
+    private String phoneNumber;
+    private String address;
 
     public UserInfoResponse(User user) {
         this.id = user.getId();
@@ -36,5 +37,7 @@ public class UserInfoResponse {
         this.emailVerified = user.getEmailVerified();
         this.provider = user.getProvider();
         this.providerId = user.getProviderId();
+        this.address=user.getAddress();
+        this.phoneNumber=user.getPhoneNumber();
     }
 }

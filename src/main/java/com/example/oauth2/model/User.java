@@ -36,6 +36,8 @@ public class User {
     private String email;
 
     private String imageUrl;
+    private String phoneNumber;
+    private String address;
 
     @Column(nullable = false)
     private Boolean emailVerified = false;

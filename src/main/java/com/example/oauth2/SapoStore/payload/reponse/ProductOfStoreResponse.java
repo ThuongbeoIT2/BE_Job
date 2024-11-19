@@ -1,6 +1,7 @@
 package com.example.oauth2.SapoStore.payload.reponse;
 
 import com.example.oauth2.SapoStore.model.ProductOfStore;
+import com.example.oauth2.SapoStore.model.ProductOfStoreImage;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,6 +26,7 @@ public class ProductOfStoreResponse {
     private String category;
     private String storeName;
     private String storeCode;
+    private String thumbnail="https://res.cloudinary.com/dqvr7kat6/image/upload/v1721289530/agbhiqut7wyrgpjcgxm9.jpg";
 
     public static ProductOfStoreResponse cloneFromProductOfStore(ProductOfStore productOfStore) {
         ProductOfStoreResponse productOfStoreResponse = new ProductOfStoreResponse();
@@ -32,6 +34,8 @@ public class ProductOfStoreResponse {
         productOfStoreResponse.setPriceO(productOfStore.getPriceO());
         productOfStoreResponse.setDiscount(productOfStore.getDiscount());
         productOfStoreResponse.setCU("VND");
+//        ProductOfStoreImage productOfStoreImage = productOfStore.getProductOfStoreImages().get(0);
+//        productOfStoreResponse.setThumbnail(productOfStoreImage.getUrlImage());
         productOfStoreResponse.setPriceI(productOfStore.getPriceI());
         productOfStoreResponse.setDescription(productOfStore.getDescription());
         productOfStoreResponse.setView(productOfStore.getView());

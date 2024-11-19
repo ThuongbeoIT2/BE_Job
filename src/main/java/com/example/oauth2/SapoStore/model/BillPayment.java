@@ -16,6 +16,10 @@ public class BillPayment{
     private Long billID;
     private long orderID;
     private boolean isPayment;
+    private String shipperAccount;
+    private String fullName;
+    private String phone;
+    private String address;
     private long transID;
     @ManyToOne
     @JoinColumn(name = "methodId")

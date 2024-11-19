@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IProductOSImageService {
-    List<ProductOSImageResponse> getAllProductOSImage(String storeCode, long productOSID);
+    List<ProductOSImageResponse> getAllProductOSImage( long productOSID);
     Optional<ProductOfStoreImage> getProductOSImageById(long ID);
     void activeImage(ProductOfStoreImage productOfStoreImage);
     void inActive(ProductOfStoreImage productOfStoreImage);

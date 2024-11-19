@@ -17,8 +17,8 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
     Page<OrderDetail> getOrderDetailByStore(String storeCode,Pageable pageable);
     @Query("select o from orderdetail  o where o.productOfStore.id=:id and o.productOfStore.store.storeCode=:storeCode order by o.createdAt desc")
     Page<OrderDetail> getOrderDetailByProduct(long id,Pageable pageable,String storeCode);
-    @Query("select o from orderdetail  o where o.emailCustomer=:email order by o.createdAt desc ")
+    @Query("select o from orderdetail  o where o.emailCustomer=:email and o.isDelete= false order by o.createdAt desc ")
     List<OrderDetail> getOrderDetailByUser(String email);
-    @Query("select o from orderdetail o where o.productOfStore.id=:productOSID and o.emailCustomer=:emailCustomer")
+    @Query("select o from orderdetail o where o.productOfStore.id=:productOSID and o.emailCustomer=:emailCustomer and o.initOrderStatus='INIT'")
     Optional<OrderDetail> getProductOSByUser(long productOSID, String emailCustomer);
 }

@@ -30,6 +30,8 @@ public class OrderDetail {
     private String emailCustomer;
     @Column
     private  String isPayment;
+    @Column
+    private  boolean isDelete = false;
     @ManyToOne
     @JoinColumn(name = "pos")
     private ProductOfStore productOfStore;

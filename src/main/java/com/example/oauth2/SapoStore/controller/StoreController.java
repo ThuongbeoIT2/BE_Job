@@ -13,6 +13,7 @@ import com.example.oauth2.SapoStore.payload.reponse.StoreResponse;
 import com.example.oauth2.SapoStore.payload.request.ProductOSImageRequest;
 import com.example.oauth2.SapoStore.payload.request.ProductOfStoreRequest;
 import com.example.oauth2.SapoStore.payload.request.StoreRequest;
+import com.example.oauth2.SapoStore.repository.ProductOfStoreRepository;
 import com.example.oauth2.SapoStore.repository.ProductRepository;
 import com.example.oauth2.SapoStore.repository.StoreTypeRepository;
 import com.example.oauth2.SapoStore.service.iservice.IProductOSImageService;
@@ -56,6 +57,8 @@ public class StoreController {
     private ProductRepository productRepository;
     @Autowired
     private IProductOSImageService iProductOSImageService;
+    @Autowired
+    private ProductOfStoreRepository productOfStoreRepository;
 
     @GetMapping(value = "/store/getall")
     ResponseEntity<Page<StoreResponse>> getAllStore(@RequestParam(defaultValue = "0") int page) {
@@ -207,16 +210,15 @@ public class StoreController {
         return ResponseEntity.ok(productResponses);
     }
     @PostMapping(value = "/productOS/{productOfStoreid}")
-    ResponseEntity<ProductOfStoreResponse> getProductOfMyStore( @RequestParam String storeCode,
-                                                                     @PathVariable Long productOfStoreid){
+    ResponseEntity<ProductOfStoreResponse> getProductOfMyStore(@PathVariable Long productOfStoreid){
 
         Optional<ProductOfStoreResponse> productOfStoreResponse = iProductOfStoreService.getProductOfStoreById(productOfStoreid);
         if (productOfStoreResponse.isEmpty()){
             throw new NotFoundObjectException(GlobalConstant.ObjectClass.PRODUCTOS,GlobalConstant.ErrorCode.MER404);
         }
-        if (!productOfStoreResponse.get().getStoreCode().equalsIgnoreCase(storeCode) ){
-            throw  new VerifyStoreManagerException("Sản phẩm không thuộc quyền sở hữu của bạn");
-        }
+        Optional<ProductOfStore> productOfStore = iProductOfStoreService.ProductOfStoreById(productOfStoreid);
+        productOfStore.get().setView(productOfStore.get().getView()+1);
+        productOfStoreRepository.save(productOfStore.get());
         return ResponseEntity.ok(productOfStoreResponse.get());
     }
     @PostMapping(value = "/productOS/insert")
@@ -310,14 +312,14 @@ public class StoreController {
         return iProductOfStoreService.isExistProductOfStore(slugProduct,storeCode);
     }
     @PostMapping(value = "/productOS/image/getAll")
-    ResponseEntity<ApiResponse> getAllProductOSImage(@RequestParam  String storeCode,
+    ResponseEntity<ApiResponse> getAllProductOSImage(
                                                      @RequestParam Long productOSID){
 
         Optional<ProductOfStoreResponse> productOfStoreResponse = iProductOfStoreService.getProductOfStoreById(productOSID);
         if (productOfStoreResponse.isEmpty()){
             throw new NotFoundObjectException(GlobalConstant.ErrorCode.MER404,GlobalConstant.ResultResponse.FAILURE);
         }
-        List<ProductOSImageResponse> productOSImageResponses = iProductOSImageService.getAllProductOSImage(storeCode,productOSID);
+        List<ProductOSImageResponse> productOSImageResponses = iProductOSImageService.getAllProductOSImage(productOSID);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,productOSImageResponses));
     }
 

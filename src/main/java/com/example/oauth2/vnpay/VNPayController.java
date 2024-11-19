@@ -3,6 +3,8 @@ package com.example.oauth2.vnpay;
 import com.example.oauth2.SapoStore.model.*;
 import com.example.oauth2.SapoStore.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -79,7 +81,18 @@ public class VNPayController {
         // Ở đây bạn có thể thêm logic để xử lý thanh toán như kiểm tra chữ ký, cập nhật trạng thái đơn hàng, v.v.
         // Trong trường hợp giao dịch thất bại (Khách hàng chưa thanh toán. VNPAYsession hết hạn thì hoàn hàng lại.)
         // Trong trường hợp chuyển tiền thành công rồi thì coi như full luồng. Nếu có lỗi bên BE mình thì sẽ validateTransacionError();
-        return ResponseEntity.ok(response);
+
+        if ("00".equals(vnp_ResponseCode)) {
+            // Payment was successful, redirect to order-detail page
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Location", "http://localhost:4200/my-cart");
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        } else {
+            // Handle failure logic here
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Location", "http://localhost:4200/payment-failure");
+            return new ResponseEntity<>(headers, HttpStatus.FOUND); // 302 redirect
+        }
     }
 
 }

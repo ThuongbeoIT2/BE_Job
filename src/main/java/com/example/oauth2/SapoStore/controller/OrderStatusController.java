@@ -2,6 +2,7 @@ package com.example.oauth2.SapoStore.controller;
 
 import com.example.oauth2.SapoStore.exception.SlugConflictException;
 import com.example.oauth2.SapoStore.model.OrderStatus;
+import com.example.oauth2.SapoStore.payload.reponse.OrderStatusRespone;
 import com.example.oauth2.SapoStore.repository.OrderStatusRepository;
 import com.example.oauth2.globalContanst.GlobalConstant;
 import com.example.oauth2.payload.ApiResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "orderstatus")
@@ -20,7 +22,7 @@ public class OrderStatusController {
     private OrderStatusRepository orderStatusRepository;
     @GetMapping(value = "get-all")
     ResponseEntity<ApiResponse> getAllOrderStatus(){
-        List<OrderStatus> orderStatuses= orderStatusRepository.findAll();
+        List<OrderStatusRespone> orderStatuses= orderStatusRepository.findAll().stream().map(OrderStatusRespone::cloneFromOrderStatus).collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS,orderStatuses));
     }
     @PostMapping(value = "insert")

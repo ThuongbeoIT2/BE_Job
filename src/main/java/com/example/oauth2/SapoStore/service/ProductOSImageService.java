@@ -17,7 +17,7 @@ public class ProductOSImageService implements IProductOSImageService {
     @Autowired
     private ProductOfStoreImageRepository productOfStoreImageRepository;
     @Override
-    public List<ProductOSImageResponse> getAllProductOSImage(String storeCode, long productOSID) {
+    public List<ProductOSImageResponse> getAllProductOSImage( long productOSID) {
         return productOfStoreImageRepository.getProductOfStoreImageByProduct(productOSID).stream()
                 .map(ProductOSImageResponse::cloneFromProductOSImage).collect(Collectors.toList());
     }

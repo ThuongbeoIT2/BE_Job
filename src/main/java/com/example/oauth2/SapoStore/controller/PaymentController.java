@@ -14,9 +14,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -26,6 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 public class PaymentController {
     @Autowired
     private OrderService orderService;
@@ -69,7 +68,16 @@ private TransactionVNPayRepository transactionVNPayRepository;
         orderService.orderToCart(productOfStore.get(),quantity,getEmailCustomer());
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
+    @PostMapping(value = "/delete-order")
+    ResponseEntity<ApiResponse> deletOrder(@RequestParam long orderId){
 
+        Optional<OrderDetail> orderDetail= orderDetailRepository.findById(orderId);
+        if (orderDetail.isPresent()){
+            orderDetailRepository.delete(orderDetail.get());
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("FAIL",GlobalConstant.ResultResponse.FAILURE,""));
+    }
     @PostMapping(value = "/order/update")
     ResponseEntity<ApiResponse> Update(@RequestParam long orderDetailID,
                                           @RequestParam int quantity){
@@ -91,59 +99,22 @@ private TransactionVNPayRepository transactionVNPayRepository;
         }
 
     }
-//    @PostMapping(value = "/buy-now")
-//
-//    ResponseEntity<ApiResponse> buyNow(@RequestParam long productOSID,
-//                                       @RequestParam int quantity,
-//                                       @RequestParam int paymentMethodID) throws InterruptedException {
-//        Optional<ProductOfStore> productOfStore = isProductOSExist(productOSID);
-//        if (quantity<0 ){
-//            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILED",GlobalConstant.ResultResponse.FAILURE,""));
-//        }
-//        PaymentMethod paymentMethod = getPaymentMethodById(paymentMethodID);
-//        OrderDetail orderDetail=orderService.orderToCart(productOfStore.get(),quantity,getEmailCustomer());
-//        orderService.addOrderToQueue(orderDetail.getId());
-//        if ("VN-PAY".equalsIgnoreCase(paymentMethod.getSlug())){
-//            orderDetail.setVNPAY(true);
-//            orderDetailRepository.save(orderDetail);
-//            orderService.intTransactionPaymentVNPay(orderDetail);
-//            String redirectUrl = vnPayService.createOrder(
-//                    (int) orderDetail.getPrice_total(),
-//                    String.valueOf(orderDetail.getId()),
-//                    "http://localhost:8080"
-//            );
-//            Map<String, String> response = new HashMap<>();
-//            response.put("redirectUrl", redirectUrl);
-//            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK", "Redirecting to VNPay", response));
-//        }
-//        orderDetail.setVNPAY(false);
-//        orderDetailRepository.save(orderDetail);
-//        BillPayment billPayment = new BillPayment();
-//        OrderStatus orderStatus = orderStatusRepository.findById(1).get();
-//        billPayment.setOrderStatus(orderStatus);
-//        billPayment.setPayment(false);
-//        billPaymentRepository.save(billPayment);
-//        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đặt  hàng thành công",orderDetail));
-//    }
-//    @PostMapping(value = "/buy-now")
-//    ResponseEntity<ApiResponse> buyNow(@RequestParam long productOSID,
-//                                       @RequestParam int quantity) throws InterruptedException {
-//        Optional<ProductOfStore> productOfStore = isProductOSExist(productOSID);
-//        if (quantity < 0 ) {
-//            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, ""));
-//        }
-//        OrderDetail orderDetail = orderService.orderToCart(productOfStore.get(), quantity, getEmailCustomer());
-//        // Đẩy vào queue
-//        orderService.addOrderToQueue(orderDetail.getId());
-//        Thread.sleep(1000);
-//        OrderDetail orderDetailQueue = orderDetailRepository.findById(orderDetail.getId()).get();
-//        System.out.println(orderDetailQueue.getInitOrderStatus());
-//        if ("FAILD".equalsIgnoreCase(orderDetailQueue.getInitOrderStatus())){
-//            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Hết hàng"));
-//        }
-//        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đặt  hàng thành công",""));
-//
-//    }
+
+
+    @PostMapping(value = "/order/getById")
+    public ResponseEntity<ApiResponse> getOrderById(@RequestParam long orderId) {
+        Optional<OrderDetail> orderDetail = orderDetailRepository.findById(orderId);
+        String emailCustomer = getEmailCustomer();
+        if (orderDetail.isPresent() && orderDetail.get().getEmailCustomer().equals(emailCustomer) ) {
+            // Convert OrderDetail to OrderDetailResponse if needed
+            OrderDetailResponse orderDetailResponse = OrderDetailResponse.cloneFromOrderDetail(orderDetail.get());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, orderDetailResponse));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("FAIL", GlobalConstant.ResultResponse.FAILURE, "Order not found"));
+        }
+    }
 
     @PostMapping(value = "order-in-cart")
     public ResponseEntity<ApiResponse> PaymentInCart(@RequestParam long orderDetailID
@@ -170,7 +141,7 @@ private TransactionVNPayRepository transactionVNPayRepository;
                         .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Hết hàng"));
             }
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, "Đặt hàng thành công"));
+                    .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, orderDetailID));
         }).exceptionally(ex -> {
             ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -178,8 +149,12 @@ private TransactionVNPayRepository transactionVNPayRepository;
         }).join();
     }
 
+
     @PostMapping(value = "paymentVNPAY")
-    ResponseEntity<ApiResponse> paymentWithVNPAY(@RequestParam long orderDetailID){
+    ResponseEntity<ApiResponse> paymentWithVNPAY(@RequestParam long orderDetailID,
+                                                 @RequestParam String fullName,
+                                                 @RequestParam String phoneNumber,
+                                                 @RequestParam String address){
         Optional<OrderDetail> orderDetail = orderDetailRepository.findById(orderDetailID);
         if (orderDetail.isEmpty()){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -190,14 +165,22 @@ private TransactionVNPayRepository transactionVNPayRepository;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Lỗi xử lý đơn hàng"));
         }
-        orderDetail.get().setVNPAY(true);
+            orderDetail.get().setVNPAY(true);
             orderDetailRepository.save(orderDetail.get());
-            orderService.initTransactionPaymentVNPay(orderDetail.get());
-            BillPayment billPayment= new BillPayment();
+            Optional<BillPayment> billPaymentO = billPaymentRepository.findByOrderID(orderDetailID);
+            if (billPaymentO.isEmpty()){
+                BillPayment billPayment = new BillPayment();
+                OrderStatus orderStatus = orderStatusRepository.findById(2).get();
+                billPayment.setOrderStatus(orderStatus);
+                billPayment.setPayment(false);
+                billPayment.setOrderID(orderDetailID);
+                billPayment.setFullName(fullName);
+                billPayment.setPhone(phoneNumber);
+                billPayment.setAddress(address);
+                billPaymentRepository.save(billPayment);
+            }
 
-            billPayment.setPayment(false);
-            billPayment.setOrderID(orderDetailID);
-            billPaymentRepository.save(billPayment);
+            orderService.initTransactionPaymentVNPay(orderDetail.get());
             String redirectUrl = vnPayService.createOrder(
                     (int) orderDetail.get().getPrice_total(),
                     String.valueOf(orderDetail.get().getId()),
@@ -208,7 +191,10 @@ private TransactionVNPayRepository transactionVNPayRepository;
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK", "Redirecting to VNPay", response));
         }
     @PostMapping(value = "paymentManual")
-    ResponseEntity<ApiResponse> paymentManual(@RequestParam long orderDetailID){
+    ResponseEntity<ApiResponse> paymentManual(@RequestParam long orderDetailID,
+                                              @RequestParam String fullName,
+                                              @RequestParam String phoneNumber,
+                                              @RequestParam String address){
         Optional<OrderDetail> orderDetail = orderDetailRepository.findById(orderDetailID);
         if (orderDetail.isEmpty()){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -219,20 +205,22 @@ private TransactionVNPayRepository transactionVNPayRepository;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Lỗi xử lý đơn hàng"));
         }
-        TransactionVNPay transactionVNPay=orderService.initTransactionPaymentVNPay(orderDetail.get());
-        transactionVNPay.setIsPaymentByShipper("ShipperCode");
-        transactionVNPayRepository.save(transactionVNPay);
         BillPayment billPayment = new BillPayment();
         OrderStatus orderStatus = orderStatusRepository.findById(2).get();
         billPayment.setOrderStatus(orderStatus);
         billPayment.setPayment(false);
         billPayment.setOrderID(orderDetailID);
+        billPayment.setFullName(fullName);
+        billPayment.setPhone(phoneNumber);
+        billPayment.setAddress(address);
         billPaymentRepository.save(billPayment);
+        orderService.initTransactionPaymentVNPay(orderDetail.get());
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đơn hàng đã được vận chuyển",""));
     }
     @PostMapping(value = "/buy-now")
     public ResponseEntity<ApiResponse> buyNow(@RequestParam long productOSID,
-                                              @RequestParam int quantity) throws InterruptedException {
+                                              @RequestParam int quantity
+                                             ) throws InterruptedException {
         // Kiểm tra điều kiện ban đầu
         Optional<ProductOfStore> productOfStoreOpt = isProductOSExist(productOSID);
         if (!productOfStoreOpt.isPresent()) {
@@ -269,8 +257,9 @@ private TransactionVNPayRepository transactionVNPayRepository;
                 return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
                         .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Hết hàng"));
             }
+
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, "Đặt hàng thành công"));
+                    .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, orderDetailQueue.getId()));
         }).exceptionally(ex -> {
             ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
