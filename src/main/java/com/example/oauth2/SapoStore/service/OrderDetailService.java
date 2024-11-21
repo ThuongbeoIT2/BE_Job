@@ -1,10 +1,9 @@
 package com.example.oauth2.SapoStore.service;
 
-import com.example.oauth2.SapoStore.model.Cart;
+
 import com.example.oauth2.SapoStore.model.OrderDetail;
 import com.example.oauth2.SapoStore.payload.reponse.OrderDetailResponse;
 import com.example.oauth2.SapoStore.payload.request.OrderDetailRequest;
-import com.example.oauth2.SapoStore.repository.CartRepository;
 import com.example.oauth2.SapoStore.repository.OrderDetailRepository;
 import com.example.oauth2.SapoStore.service.iservice.IOrderDetailService;
 import com.example.oauth2.util.ProcessUtils;
@@ -24,8 +23,8 @@ import java.util.stream.Collectors;
 public class OrderDetailService implements IOrderDetailService {
     @Autowired
     private OrderDetailRepository orderDetailRepository;
-    @Autowired
-    private CartRepository cartRepository;
+//    @Autowired
+//    private CartRepository cartRepository;
     @Override
     public Page<OrderDetailResponse> findAll(Pageable pageable) {
         return orderDetailRepository.findAll(pageable).map(OrderDetailResponse::cloneFromOrderDetail);
@@ -59,10 +58,10 @@ public class OrderDetailService implements IOrderDetailService {
         orderDetailRepository.save(orderDetail);
     }
 
-    private Cart findCartByUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return cartRepository.findCartByUser(email);
-    }
+//    private Cart findCartByUser() {
+//        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+//        return cartRepository.findCartByUser(email);
+//    }
 
     @Override
     public void Update(int quantity, OrderDetail orderDetail) {

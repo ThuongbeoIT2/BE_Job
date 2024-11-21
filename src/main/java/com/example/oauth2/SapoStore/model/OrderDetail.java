@@ -32,6 +32,8 @@ public class OrderDetail {
     private  String isPayment;
     @Column
     private  boolean isDelete = false;
+    @Column
+    private boolean isFeedback = false;
     @ManyToOne
     @JoinColumn(name = "pos")
     private ProductOfStore productOfStore;

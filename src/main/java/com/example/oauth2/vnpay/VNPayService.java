@@ -90,32 +90,84 @@ public class VNPayService {
         return paymentUrl;
     }
 
-    public int orderReturn(HttpServletRequest request){
-        Map fields = new HashMap();
-        for (Enumeration params = request.getParameterNames(); params.hasMoreElements();) {
-            String fieldName = null;
-            String fieldValue = null;
-            fieldName = URLEncoder.encode((String) params.nextElement(), StandardCharsets.US_ASCII);
-            fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+//    public int orderReturn(HttpServletRequest request){
+//        Map fields = new HashMap();
+//        for (Enumeration params = request.getParameterNames(); params.hasMoreElements();) {
+//            String fieldName = null;
+//            String fieldValue = null;
+//            fieldName = URLEncoder.encode((String) params.nextElement(), StandardCharsets.US_ASCII);
+//            fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII);
+//            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+//                fields.put(fieldName, fieldValue);
+//            }
+//        }
+//
+//        String vnp_SecureHash = request.getParameter("vnp_SecureHash");
+//        fields.remove("vnp_SecureHashType");
+//        fields.remove("vnp_SecureHash");
+//        String signValue = VNPayConfig.hashAllFields(fields);
+//        if (signValue.equals(vnp_SecureHash)) {
+//            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
+//                return 1;
+//            } else {
+//                return 0;
+//            }
+//        } else {
+//            return -1;
+//        }
+//    }
+
+    public int orderReturn(HttpServletRequest request, long orderId) {
+        Map<String, String> fields = new HashMap<>();
+
+        // Trích xuất tất cả các tham số từ request và lưu vào fields
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
+            String fieldName = params.nextElement();
+            String fieldValue = request.getParameter(fieldName);
+            if (fieldValue != null && !fieldValue.isEmpty()) {
                 fields.put(fieldName, fieldValue);
             }
         }
 
+        // Lấy `vnp_SecureHash` từ request
         String vnp_SecureHash = request.getParameter("vnp_SecureHash");
+
+        // Xóa các trường không cần thiết trước khi hash
         fields.remove("vnp_SecureHashType");
         fields.remove("vnp_SecureHash");
-        String signValue = VNPayConfig.hashAllFields(fields);
-        if (signValue.equals(vnp_SecureHash)) {
-            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                return 1;
-            } else {
-                return 0;
-            }
+
+        // Tính toán lại secure hash
+        String calculatedHash = VNPayConfig.hashAllFields(fields);
+
+        // Xác thực `secureHash`
+        if (!calculatedHash.equals(vnp_SecureHash)) {
+            System.out.println("Invalid secure hash! Calculated: " + calculatedHash + ", Provided: " + vnp_SecureHash);
+            return -1; // Sai secure hash
+        }
+
+        // Lấy `orderId` từ `vnp_OrderInfo`
+        String orderIdFromRequest = request.getParameter("vnp_OrderInfo");
+        if (orderIdFromRequest == null || orderIdFromRequest.isEmpty()) {
+            System.out.println("Missing orderId in vnp_OrderInfo.");
+            return -2; // Thiếu hoặc sai orderId
+        }
+        fields.remove("vnp_OrderInfo");
+        // Lấy `orderId` từ cơ sở dữ liệu
+        if (orderIdFromRequest.equalsIgnoreCase(String.valueOf(orderId))) {
+            System.out.println("Order ID not compare: " + orderIdFromRequest);
+            return -3; // Không tìm thấy orderId trong cơ sở dữ liệu
+        }
+
+        // Kiểm tra trạng thái giao dịch
+        String transactionStatus = request.getParameter("vnp_TransactionStatus");
+        if (VNPayTransactionStatus.SUCCESS.getCode().equals(transactionStatus)) {
+            return 1; // Giao dịch thành công
         } else {
-            return -1;
+            System.out.println("Transaction failed for Order ID: " + orderIdFromRequest);
+            return 0; // Giao dịch thất bại
         }
     }
+
 
     public void handleTransaction (long orderID,String vnp_ResponseCode){
         TransactionVNPay transactionVNPay = transactionVNPayRepository.findByOrderID(orderID).get(0);
@@ -143,4 +195,53 @@ public class VNPayService {
         transactionVNPayRepository.save(transactionVNPay);
     }
 
+    public void handleTransactionError(long orderID, String vnpResponseCode) {
+        switch (vnpResponseCode) {
+            case "00":
+                // Giao dịch thành công
+                System.out.println("Order ID: " + orderID + " - Transaction successful.");
+                // Thêm logic cập nhật trạng thái đơn hàng thành công vào database.
+                break;
+            case "07":
+                // Giao dịch nghi ngờ gian lận
+                System.out.println("Order ID: " + orderID + " - Suspected fraud.");
+                // Gửi cảnh báo tới quản trị viên hoặc khách hàng.
+                break;
+            case "09":
+                // Chưa đăng ký Internet Banking
+                System.out.println("Order ID: " + orderID + " - Internet banking not registered.");
+                // Thông báo khách hàng cần đăng ký Internet Banking.
+                break;
+            case "10":
+                // Thông tin xác thực không đúng
+                System.out.println("Order ID: " + orderID + " - Authentication failed.");
+                // Thông báo lỗi xác thực.
+                break;
+            case "11":
+                // Hết hạn chờ thanh toán
+                System.out.println("Order ID: " + orderID + " - Payment timeout.");
+                // Hủy đơn hàng hoặc gửi thông báo gia hạn thanh toán.
+                break;
+            case "12":
+                // Tài khoản bị khóa
+                System.out.println("Order ID: " + orderID + " - Account locked.");
+                // Hủy giao dịch và thông báo cho khách hàng.
+                break;
+            case "51":
+                // Không đủ số dư
+                System.out.println("Order ID: " + orderID + " - Insufficient balance.");
+                // Thông báo khách hàng nạp thêm tiền.
+                break;
+            case "75":
+                // Ngân hàng bảo trì
+                System.out.println("Order ID: " + orderID + " - Bank under maintenance.");
+                // Gửi thông báo yêu cầu thử lại sau.
+                break;
+            default:
+                // Các lỗi khác
+                System.out.println("Order ID: " + orderID + " - Other error, code: " + vnpResponseCode);
+                // Xử lý lỗi chung.
+                break;
+        }
+    }
 }

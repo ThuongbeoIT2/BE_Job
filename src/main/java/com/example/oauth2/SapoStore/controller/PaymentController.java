@@ -168,6 +168,10 @@ private TransactionVNPayRepository transactionVNPayRepository;
             orderDetail.get().setVNPAY(true);
             orderDetailRepository.save(orderDetail.get());
             Optional<BillPayment> billPaymentO = billPaymentRepository.findByOrderID(orderDetailID);
+            if (billPaymentO.isPresent() && billPaymentO.get().isPayment()){
+                return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+                        .body(new ApiResponse("NOT_IMPLEMENTED", GlobalConstant.ResultResponse.FAILURE, "Đơn hàng đã được thanh toán"));
+            }
             if (billPaymentO.isEmpty()){
                 BillPayment billPayment = new BillPayment();
                 OrderStatus orderStatus = orderStatusRepository.findById(2).get();

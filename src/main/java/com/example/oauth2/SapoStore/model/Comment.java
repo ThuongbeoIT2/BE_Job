@@ -22,6 +22,7 @@ public class Comment {
     private Date createdAt;
     private int evaluate;
     private String urlImage;
+    private boolean isDisplay = true;
     @ManyToOne
     @JoinColumn(name = "productOfStoreId")
     private ProductOfStore productOfStore;

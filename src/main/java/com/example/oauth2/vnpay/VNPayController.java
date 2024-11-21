@@ -46,6 +46,7 @@ public class VNPayController {
     * &vnp_TxnRef=20047956
     * &vnp_SecureHash=22a4244466ec6e907d59e81466b8670470d8a9a73238532688f27ce7731fa49ce8a3f9b1c4a44c01299504894c88a4310cc6c467ff3d14d9e6b94404de765fe6
     * */
+
     @GetMapping("/vnpay-payment")
     public ResponseEntity<PaymentResponse> handleVNPayPayment(
             @RequestParam long vnp_Amount,
@@ -71,24 +72,24 @@ public class VNPayController {
         response.setVnp_ResponseCode(vnp_ResponseCode);
         response.setVnp_TmnCode(vnp_TmnCode);
         response.setVnp_TransactionNo(vnp_TransactionNo);
-        // TODO: 8/2/2024  vnp_TransactionStatus handle Status
         response.setVnp_TransactionStatus(vnp_TransactionStatus);
         response.setVnp_TxnRef(vnp_TxnRef);
         response.setVnp_SecureHash(vnp_SecureHash);
         /* By pass thành công cho giao dịch thanh toán . Sau còn đảm bảo giao dịch được gửi vào đúng shopAccountLink */
         String orderID = vnp_OrderInfo;
-        vnPayService.handleTransaction(Long.parseLong(orderID),vnp_ResponseCode);
+
         // Ở đây bạn có thể thêm logic để xử lý thanh toán như kiểm tra chữ ký, cập nhật trạng thái đơn hàng, v.v.
         // Trong trường hợp giao dịch thất bại (Khách hàng chưa thanh toán. VNPAYsession hết hạn thì hoàn hàng lại.)
         // Trong trường hợp chuyển tiền thành công rồi thì coi như full luồng. Nếu có lỗi bên BE mình thì sẽ validateTransacionError();
 
         if ("00".equals(vnp_ResponseCode)) {
+            vnPayService.handleTransaction(Long.parseLong(orderID),vnp_ResponseCode);
             // Payment was successful, redirect to order-detail page
             HttpHeaders headers = new HttpHeaders();
             headers.add("Location", "http://localhost:4200/my-cart");
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
         } else {
-            // Handle failure logic here
+            vnPayService.handleTransactionError(Long.parseLong(orderID),vnp_ResponseCode);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Location", "http://localhost:4200/payment-failure");
             return new ResponseEntity<>(headers, HttpStatus.FOUND); // 302 redirect

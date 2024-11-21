@@ -10,7 +10,7 @@ public class AdminStatistical {
     private int user;
     private int product;
     private int productOfStore;
+    private int orderDetail;
     private long Revenue;
-
 
 }
