@@ -12,7 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductService implements IProductService {
     @Autowired
@@ -22,6 +25,11 @@ public class ProductService implements IProductService {
     @Override
     public Page<ProductResponse> findAll(Pageable pageable) {
         return productRepository.findAll(pageable).map(ProductResponse::cloneFromProduct);
+    }
+
+    @Override
+    public List<ProductResponse> getAllData() {
+        return productRepository.findAll().stream().map(ProductResponse::cloneFromProduct).collect(Collectors.toList());
     }
 
     @Override

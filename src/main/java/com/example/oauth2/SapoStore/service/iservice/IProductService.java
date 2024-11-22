@@ -6,11 +6,13 @@ import com.example.oauth2.SapoStore.payload.request.ProductRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface IProductService {
     Page<ProductResponse> findAll(Pageable pageable);
+    List<ProductResponse> getAllData();
     Optional<ProductResponse> findProductBySlug(String slug);
     Page<ProductResponse> getProductByCategory(String category, Pageable pageable);
     Page<ProductResponse> searchProductByKey(String key, Pageable pageable);

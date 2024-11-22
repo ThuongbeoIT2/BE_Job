@@ -26,6 +26,11 @@ public class ProductOfStoreService implements IProductOfStoreService {
     private ProductOfStoreImageRepository productOfStoreImageRepository;
 
     @Override
+    public List<ProductOfStoreResponse> getAllData() {
+        return productOfStoreRepository.findAll().stream().map(ProductOfStoreResponse::cloneFromProductOfStore).collect(Collectors.toList());
+    }
+
+    @Override
     public List<ProductOSImageResponse> getImageByProductOS(long id) {
         return productOfStoreImageRepository
                 .getProductOfStoreImageByProduct(id)

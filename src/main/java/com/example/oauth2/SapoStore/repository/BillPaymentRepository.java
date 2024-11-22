@@ -13,5 +13,4 @@ public interface BillPaymentRepository extends JpaRepository<BillPayment,Long> {
     @Query("select o from billpayment o where o.orderID=:orderID")
     Optional<BillPayment> findByOrderID(long orderID);
 
-    long getRevenue(Date date);
 }

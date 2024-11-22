@@ -1,5 +1,6 @@
 package com.example.oauth2;
 
+import com.example.oauth2.ChatAI.services.GeminiService;
 import com.example.oauth2.config.AppProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

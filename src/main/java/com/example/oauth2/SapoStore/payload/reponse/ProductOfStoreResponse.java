@@ -2,6 +2,7 @@ package com.example.oauth2.SapoStore.payload.reponse;
 
 import com.example.oauth2.SapoStore.model.ProductOfStore;
 import com.example.oauth2.SapoStore.model.ProductOfStoreImage;
+import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +28,11 @@ public class ProductOfStoreResponse {
     private String storeName;
     private String storeCode;
     private String thumbnail="https://res.cloudinary.com/dqvr7kat6/image/upload/v1721289530/agbhiqut7wyrgpjcgxm9.jpg";
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this); // Sử dụng Gson để chuyển đổi đối tượng sang JSON
+    }
 
     public static ProductOfStoreResponse cloneFromProductOfStore(ProductOfStore productOfStore) {
         ProductOfStoreResponse productOfStoreResponse = new ProductOfStoreResponse();

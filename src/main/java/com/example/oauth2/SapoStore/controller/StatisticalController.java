@@ -50,12 +50,12 @@ public class StatisticalController {
         adminStatistical.setRevenue(revenue);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","OK",adminStatistical));
     }
-    @GetMapping(value = "/manager/statistical")
-    ResponseEntity<ApiResponse> adminStatistical(String storeCode){
-        int productOS = productOfStoreRepository.findAll().size();
-        long revenue = orderDetailRepository.getRevenueWithStore(storeCode);
-        int orderDetail = orderDetailRepository.findAll().size();
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","OK",""));
-    }
+//    @GetMapping(value = "/manager/statistical")
+//    ResponseEntity<ApiResponse> adminStatistical(String storeCode){
+//        int productOS = productOfStoreRepository.findAll().size();
+//        long revenue = orderDetailRepository.getRevenueWithStore(storeCode);
+//        int orderDetail = orderDetailRepository.findAll().size();
+//        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","OK",""));
+//    }
 
 }

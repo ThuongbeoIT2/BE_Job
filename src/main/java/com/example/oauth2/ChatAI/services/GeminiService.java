@@ -1,6 +1,16 @@
 package com.example.oauth2.ChatAI.services;
 
 
+import com.example.oauth2.SapoStore.model.ProductOfStore;
+import com.example.oauth2.SapoStore.payload.reponse.ProductOfStoreResponse;
+import com.example.oauth2.SapoStore.payload.reponse.ProductResponse;
+import com.example.oauth2.SapoStore.repository.ProductOfStoreRepository;
+import com.example.oauth2.SapoStore.repository.ProductRepository;
+import com.example.oauth2.SapoStore.repository.StoreRepository;
+import com.example.oauth2.SapoStore.service.iservice.IProductOfStoreService;
+import com.example.oauth2.SapoStore.service.iservice.IProductService;
+import com.example.oauth2.SapoStore.service.iservice.IStoreService;
+import com.google.gson.Gson;
 import org.apache.logging.log4j.util.Strings;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -8,30 +18,122 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.List;
+
 @Service
 public class GeminiService {
 
     private static final Logger logger = LoggerFactory.getLogger(GeminiService.class);
 
     private static final String GEMINI_MODEL = "gemini-1.5-flash";
-    String dataProduct ="";
-    String dataStore ="";
-    String dataProductOS="";
+    @Autowired
+    private IProductService iProductService;
+
+    @Autowired
+    private IProductOfStoreService iProductOfStoreService;
+
+
     String dataSystem="";
+    String conversationHistory="";
+    String modelProduct = "Bảng Product có cấu trúc :" +
+            "proId: int (Primary Key, mã định danh sản phẩm)  \n" +
+            "proName: String (Tên sản phẩm)  \n" +
+            "slug: String (Đường dẫn URL ngắn)  \n" +
+            "thumbnail: String (Đường dẫn hình ảnh thu nhỏ)  \n" +
+            "description: String (Mô tả chi tiết sản phẩm)  \n" +
+            "category: String (Danh mục sản phẩm) ";
+    String modelProductOS ="Bảng sản phẩm chi tiết có cấu trúc :" +
+            "id: Long (Primary Key, mã định danh sản phẩm)  \n" +
+            "priceO: Long (Giá gốc của sản phẩm)  \n" +
+            "priceI: Long (Giá nhập vào của sản phẩm)  \n" +
+            "discount: double (Tỷ lệ giảm giá, theo phần trăm)  \n" +
+            "CU: String (Đơn vị tiền tệ, mặc định là \"VND\")  \n" +
+            "view: long (Số lượt xem sản phẩm)  \n" +
+            "status: boolean (Trạng thái sản phẩm: true = còn hàng, false = hết hàng)  \n" +
+            "proName: String (Tên sản phẩm)  \n" +
+            "description: String (Mô tả chi tiết sản phẩm)  \n" +
+            "quantity: int (Số lượng sản phẩm còn trong kho)  \n" +
+            "evaluate: double (Đánh giá trung bình của sản phẩm từ người dùng)  \n" +
+            "slug: String (Đường dẫn URL ngắn cho sản phẩm)  \n" +
+            "category: String (Danh mục sản phẩm)  \n" +
+            "storeName: String (Tên cửa hàng bán sản phẩm)  \n" +
+            "storeCode: String (Mã cửa hàng)  \n" +
+            "thumbnail: String (Đường dẫn hình ảnh thu nhỏ, mặc định là URL ảnh từ Cloudinary)\n";
+    private static final String API_KEY ="AIzaSyDoQ2Te_XGgB12biKBDd9Js3jXcKqOXMTU";
+//    @Scheduled(cron = "0 0 0 * * ?")
+    public  void loadData() {
+        StringBuilder dataProduct = new StringBuilder();
+        StringBuilder dataProductOS= new StringBuilder();
+        List<ProductResponse> productResponses = iProductService.getAllData();
+        for (ProductResponse productResponse : productResponses) {
+            if (productResponse != null) {
+                dataProduct.append(new Gson().toJson(productResponse)); // Chuyển từng đối tượng sang JSON
+            }
+        }
+        List<ProductOfStoreResponse> productOfStoreResponses = iProductOfStoreService.getAllData();
+        for (ProductOfStoreResponse productOfStoreResponse : productOfStoreResponses){
+            if (productOfStoreResponse != null) {
+                dataProductOS.append(new Gson().toJson(productOfStoreResponse)); // Chuyển từng đối tượng sang JSON
+            }
+        }
+        dataSystem = "Product Data: " + dataProduct.toString() + "\n" +
+                "Product of Store Data: " + dataProductOS.toString() +
+                "| Biết các dữ liệu ở dạng Json. 2 bảng có các trường dữ liệu tách biệt. Bạn hãy hiểu cấu trúc bảng dựa theo các thông tin sau :  " + modelProduct + "và " + modelProductOS;
 
-    private static final String API_KEY ="AIzaSyDU0RF0g4cMJEBEXsCZ85feu7MEEkODv1U";
-    private String conversationHistory = "Bạn chỉ trả lời dựa trên những thông tin sau : "+
-            "/n"+
-            "Nếu không có thông tin trong số những gì tôi viết dưới đây thì báo :Xin lỗi! Chúng tôi không có dữ liệu về câu hỏi của bạn. Vui lòng hỏi rõ hơn!"+
-            "/n"+
-            "Khi khách chào mình thì mình chào lại bằng đúng ngôn ngữ đó ";
+        System.out.println(dataSystem);
+        conversationHistory = "Bạn hãy trả lời dựa trên những thông tin sau : "+
+                " dataSystem : "+ dataSystem +
+                "conversationHistory = \"\"\"\n" +
+                "    Bạn hãy trả lời dựa trên những thông tin sau:\n" +
+                "    dataSystem: %s\n" +
+                "    Bạn hãy hiểu cấu trúc thông tin như sau:\n" +
+                "    Ví dụ 1:\n" +
+                "    proId: 1\n" +
+                "    proName: Máy giặt LG\n" +
+                "    slug: máy-giặt-lg\n" +
+                "    thumbnail: https://res.cloudinary.com/dqvr7kat6/image/upload/v1730533798/vzad1wsbaw3ecwbktpg9.jpg\n" +
+                "    description: Máy giặt LG siêu nhanh\n" +
+                "    category: Máy giặt\n" +
+                "    -> Sản phẩm có tên là *Máy giặt LG*, thuộc danh mục *Máy giặt* và có mô tả sản phẩm là *Máy giặt LG siêu nhanh*.\n" +
+                "    \n" +
+                "    Ví dụ 2:\n" +
+                "    id: 1\n" +
+                "    priceO: 11000\n" +
+                "    priceI: 10000\n" +
+                "    discount: 10.0\n" +
+                "    CU: VND\n" +
+                "    view: 13\n" +
+                "    status: true\n" +
+                "    proName: Quạt điện to\n" +
+                "    description: Quá nà đẹp với công suất lớn\n" +
+                "    quantity: -11\n" +
+                "    evaluate: 4.0\n" +
+                "    slug: quạt-điện-to\n" +
+                "    category: Quạt\n" +
+                "    storeName: Duy Thuong\n" +
+                "    storeCode: SAPO235072\n" +
+                "    thumbnail: https://res.cloudinary.com/dqvr7kat6/image/upload/v1721289530/agbhiqut7wyrgpjcgxm9.jpg\n" +
+                "    -> Sản phẩm có tên là *Quạt điện to*, mô tả là *Quá nà đẹp với công suất lớn*, thuộc danh mục *Quạt*, thuộc cửa hàng *Duy Thuong*, có giá bán *11000 VND*, có lượt xem *13*.\n" +
+                "    \n" +
+                "    Từ những ví dụ này, bạn sẽ tự động phân tích, đánh giá sản phẩm, và đưa ra gợi ý phù hợp cho khách hàng dựa trên dữ liệu có trong `dataSystem`. \n" +
+                "    Bạn không trả lời những thông tin không liên quan hoặc không cần thiết.\n" +
+                "    \n" +
+                "    Khi khách chào mình, bạn hãy chào lại bằng đúng ngôn ngữ mà khách sử dụng.\n" +
+                "\"\"\".formatted(dataSystem);\n"+
+                "Khi khách chào mình thì mình chào lại bằng đúng ngôn ngữ đó ";
+    }
+
     public String chat(String prompt) {
-
+        if (conversationHistory.isBlank()){
+            loadData();
+        }
         //Adding previous conversation history
         String fullPrompt = prompt;
 
