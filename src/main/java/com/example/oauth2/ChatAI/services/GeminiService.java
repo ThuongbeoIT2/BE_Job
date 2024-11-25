@@ -1,15 +1,10 @@
 package com.example.oauth2.ChatAI.services;
 
 
-import com.example.oauth2.SapoStore.model.ProductOfStore;
 import com.example.oauth2.SapoStore.payload.reponse.ProductOfStoreResponse;
 import com.example.oauth2.SapoStore.payload.reponse.ProductResponse;
-import com.example.oauth2.SapoStore.repository.ProductOfStoreRepository;
-import com.example.oauth2.SapoStore.repository.ProductRepository;
-import com.example.oauth2.SapoStore.repository.StoreRepository;
 import com.example.oauth2.SapoStore.service.iservice.IProductOfStoreService;
 import com.example.oauth2.SapoStore.service.iservice.IProductService;
-import com.example.oauth2.SapoStore.service.iservice.IStoreService;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.util.Strings;
 import org.json.simple.JSONArray;
@@ -20,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
