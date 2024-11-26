@@ -18,6 +18,7 @@ public class ProductResponse {
     private String thumbnail;
     private String description;
     private String category;
+    private boolean isHotSale ;
 
     @Override
     public String toString() {
@@ -29,6 +30,7 @@ public class ProductResponse {
         productResponse.setProName(product.getProName());
         productResponse.setProId(product.getProId());
         productResponse.setSlug(product.getSlug());
+        productResponse.setHotSale(product.isHotSale());
         productResponse.setDescription(product.getDescription());
         productResponse.setThumbnail(product.getThumbnail());
         productResponse.setCategory(product.getCategory().getCateName());

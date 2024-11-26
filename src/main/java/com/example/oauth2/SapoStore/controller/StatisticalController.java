@@ -34,7 +34,7 @@ public class StatisticalController {
     private BillPaymentRepository billPaymentRepository;
 
     @GetMapping(value = "/admin/statistical")
-    ResponseEntity<ApiResponse> adminStatistical(){
+    ResponseEntity<AdminStatistical> adminStatistical(){
         int user = userRepository.findAll().size();
         int store = storeRepository.findAll().size();
         int product = productRepository.findAll().size();
@@ -48,7 +48,7 @@ public class StatisticalController {
         adminStatistical.setProductOfStore(productOS);
         adminStatistical.setOrderDetail(orderDetail);
         adminStatistical.setRevenue(revenue);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","OK",adminStatistical));
+        return ResponseEntity.status(HttpStatus.OK).body(adminStatistical);
     }
 //    @GetMapping(value = "/manager/statistical")
 //    ResponseEntity<ApiResponse> adminStatistical(String storeCode){

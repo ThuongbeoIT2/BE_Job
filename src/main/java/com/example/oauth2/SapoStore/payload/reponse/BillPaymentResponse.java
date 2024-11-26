@@ -28,6 +28,7 @@ public class BillPaymentResponse {
         clonedResponse.setShipperAccount(billPayment.getShipperAccount());
         clonedResponse.setFullName(billPayment.getFullName());
         clonedResponse.setPhone(billPayment.getPhone());
+        clonedResponse.setPayment(billPayment.isPayment());
         clonedResponse.setAddress(billPayment.getAddress());
         clonedResponse.setTransID(billPayment.getTransID());
         clonedResponse.setPaymentMethod(billPayment.getPaymentMethod().toString()); // Assuming PaymentMethod is an enum

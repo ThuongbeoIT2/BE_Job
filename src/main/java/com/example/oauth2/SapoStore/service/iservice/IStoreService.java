@@ -27,4 +27,6 @@ public interface IStoreService {
     void enableStatus(Store store);
     void ACPStore(Store store);
     void WarningStore(String email_manager, String message);
+
+    List<StoreResponse> getAllInActive();
 }

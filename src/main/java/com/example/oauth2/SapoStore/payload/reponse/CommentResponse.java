@@ -13,6 +13,7 @@ public class CommentResponse {
     private String avatar_user;
     private String email_user;
     private Date createdAt;
+    private int vote;
     private int evaluate;
     private String urlImage;
     private boolean isDisplay;
@@ -26,6 +27,7 @@ public class CommentResponse {
         response.setEvaluate(comment.getEvaluate());
         response.setUrlImage(comment.getUrlImage());
         response.setDisplay(comment.isDisplay());
+        response.setVote(comment.getVote());
         return response;
     }
 

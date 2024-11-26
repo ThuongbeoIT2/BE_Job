@@ -17,8 +17,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Service
 public class StoreService implements IStoreService {
     @Autowired
@@ -84,7 +87,7 @@ public class StoreService implements IStoreService {
         store.setThumbnail(storeRequest.getThumbnail());
         store.setStoretype(storeRequest.getStoreType());
         storeRepository.save(store);
-        ACPStore(store);
+//        ACPStore(store);
     }
 
     @Override
@@ -141,6 +144,11 @@ public class StoreService implements IStoreService {
                 "</body>" +
                 "</html>";
         emailMix.sendContentToVer2(email_manager,"Thông báo cảnh cáo ! ",body);
+    }
+
+    @Override
+    public List<StoreResponse> getAllInActive() {
+        return storeRepository.getAllInActive().stream().map(StoreResponse::cloneFromStore).collect(Collectors.toList());
     }
 
 }

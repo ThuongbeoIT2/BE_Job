@@ -24,6 +24,7 @@ public class ProductOfStoreResponse {
     private int quantity;
     private double evaluate;
     private String slug;
+    private int sold;
     private String category;
     private String storeName;
     private String storeCode;
@@ -40,6 +41,7 @@ public class ProductOfStoreResponse {
         productOfStoreResponse.setPriceO(productOfStore.getPriceO());
         productOfStoreResponse.setDiscount(productOfStore.getDiscount());
         productOfStoreResponse.setCU("VND");
+        productOfStoreResponse.setSold(productOfStore.getSold());
 //        ProductOfStoreImage productOfStoreImage = productOfStore.getProductOfStoreImages().get(0);
 //        productOfStoreResponse.setThumbnail(productOfStoreImage.getUrlImage());
         productOfStoreResponse.setPriceI(productOfStore.getPriceI());
@@ -55,4 +57,5 @@ public class ProductOfStoreResponse {
         productOfStoreResponse.setQuantity(productOfStore.getQuantity());
         return productOfStoreResponse;
     }
+
 }

@@ -66,6 +66,11 @@ public class StoreController {
         Page<StoreResponse> storeResponses = iStoreService.findAll(sapoPageRequest);
         return ResponseEntity.ok(storeResponses);
     }
+    @GetMapping(value = "/store/getall-order")
+    ResponseEntity<ApiResponse> getAllStoreOrder() {
+        List<StoreResponse> storeResponses = iStoreService.getAllInActive();
+        return ResponseEntity.ok(new ApiResponse("OK","OK",storeResponses));
+    }
 
     @GetMapping(value = "/store/view/{storeCode}")
     ResponseEntity<StoreResponse> viewStore(@PathVariable String storeCode) {
@@ -132,7 +137,7 @@ public class StoreController {
     }
 
     @PostMapping(value = "/store/warningstore/{storeCode}")
-    ResponseEntity<String> WarningStore(@PathVariable String storeCode,
+    ResponseEntity<ApiResponse> WarningStore(@PathVariable String storeCode,
                                         @RequestParam String email,
                                         @RequestParam String mesage) {
         Optional<Store> store = iStoreService.findStoreBystoreCode(storeCode);
@@ -141,9 +146,17 @@ public class StoreController {
         }
         isManagerStore(storeCode,email);
         iStoreService.WarningStore(email,mesage);
-        return ResponseEntity.ok(GlobalConstant.ResultResponse.SUCCESS);
+        return ResponseEntity.ok(new ApiResponse("OK","OK",""));
     }
-
+    @PostMapping(value = "/admin/acpstore/{storeCode}")
+    ResponseEntity<ApiResponse> WarningStore(@PathVariable String storeCode) {
+        Optional<Store> store = iStoreService.findStoreBystoreCode(storeCode);
+        if (store.isEmpty()) {
+            throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORE, GlobalConstant.ErrorCode.MER404);
+        }
+        iStoreService.ACPStore(store.get());
+        return ResponseEntity.ok(new ApiResponse("OK","OK",""));
+    }
     @GetMapping(value = "/store/list-store/{slug}")
     ResponseEntity<Page<StoreResponse>> getStoreByType(@PathVariable String slug, @RequestParam(defaultValue = "0") int page) {
         SapoPageRequest sapoPageRequest = new SapoPageRequest(GlobalConstant.Value.PAGELIMIT, page * GlobalConstant.Value.PAGELIMIT);

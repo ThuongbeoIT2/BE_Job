@@ -20,6 +20,7 @@ public class Comment {
     private String avatar_user;
     private String email_user;
     private Date createdAt;
+    private int vote = 0 ;
     private int evaluate;
     private String urlImage;
     private boolean isDisplay = true;

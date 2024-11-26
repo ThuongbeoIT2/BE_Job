@@ -34,9 +34,16 @@ public class ProductController {
     @Autowired
     private CategoryRepository categoryRepository;
     @GetMapping(value = "/getall")
-    ResponseEntity<Page<ProductResponse>> getAllStore(@RequestParam(defaultValue = "0") int page) {
+    ResponseEntity<Page<ProductResponse>> getAllProduct(@RequestParam(defaultValue = "0") int page) {
         SapoPageRequest sapoPageRequest = new SapoPageRequest(GlobalConstant.Value.PAGELIMIT, page * GlobalConstant.Value.PAGELIMIT);
         Page<ProductResponse> productResponses = iProductService.findAll(sapoPageRequest);
+        return ResponseEntity.ok(productResponses);
+    }
+
+    @GetMapping(value = "/getall-hotsales")
+    ResponseEntity<Page<ProductResponse>> getAllHotSales(@RequestParam(defaultValue = "0") int page) {
+        SapoPageRequest sapoPageRequest = new SapoPageRequest(GlobalConstant.Value.PAGELIMIT, page * GlobalConstant.Value.PAGELIMIT);
+        Page<ProductResponse> productResponses = iProductService.getHotSale(sapoPageRequest);
         return ResponseEntity.ok(productResponses);
     }
     @GetMapping(value = "/view/{slug}")

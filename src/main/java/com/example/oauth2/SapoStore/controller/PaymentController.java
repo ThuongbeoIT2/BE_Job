@@ -8,9 +8,14 @@ import com.example.oauth2.SapoStore.service.OrderService;
 import com.example.oauth2.SapoStore.service.iservice.IOrderDetailService;
 import com.example.oauth2.SapoStore.service.iservice.IProductOfStoreService;
 import com.example.oauth2.globalContanst.GlobalConstant;
+import com.example.oauth2.model.User;
+import com.example.oauth2.notify.Notify;
+import com.example.oauth2.notify.NotifyRepository;
 import com.example.oauth2.payload.ApiResponse;
+import com.example.oauth2.repository.UserRepository;
 import com.example.oauth2.vnpay.VNPayService;
 import org.checkerframework.checker.units.qual.A;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +46,11 @@ public class PaymentController {
     private BillPaymentRepository billPaymentRepository;
     @Autowired
     private PaymentMethodRepository paymentMethodRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private NotifyRepository notifyRepository;
+
 @Autowired
 private TransactionVNPayRepository transactionVNPayRepository;
     @Autowired
@@ -194,6 +204,52 @@ private TransactionVNPayRepository transactionVNPayRepository;
             response.put("redirectUrl", redirectUrl);
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK", "Redirecting to VNPay", response));
         }
+
+        /* Hàm Shipper nhận đơn */
+
+    @PostMapping(value = "/shipper/received")
+    ResponseEntity<ApiResponse> orderReceived(@RequestParam String shipperAccount,
+                                              @RequestParam long billID){
+        Optional<BillPayment> billPayment = billPaymentRepository.findById(billID);
+        if (billPayment.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILD","NOT_IMPLEMENTED",""));
+        }
+        OrderDetail orderDetail = orderDetailRepository.findById(billPayment.get().getOrderID()).get();
+        if (!billPaymentOfStore(orderDetail)){
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILD","NOT_IMPLEMENTED",""));
+        }
+        billPayment.get().setShipperAccount(shipperAccount);
+        billPayment.get().setPayment(true);
+
+        orderDetail.setIsPayment("1");
+        OrderStatus orderStatus = orderStatusRepository.findById(2).get();
+        billPayment.get().setOrderStatus(orderStatus);
+        orderDetailRepository.save(orderDetail);
+        billPaymentRepository.save(billPayment.get());
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đơn hàng đã được vận chuyển",""));
+    }
+
+    @PostMapping(value = "/shipper/complete")
+    ResponseEntity<ApiResponse> orderComplete(@RequestParam long billID){
+        Optional<BillPayment> billPayment = billPaymentRepository.findById(billID);
+        if (billPayment.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILD","NOT_IMPLEMENTED",""));
+        }
+        OrderDetail orderDetail = orderDetailRepository.findById(billPayment.get().getOrderID()).get();
+        if (!billPaymentOfStore(orderDetail)){
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILD","NOT_IMPLEMENTED",""));
+        }
+        User user = userRepository.findByEmail(orderDetail.getEmailCustomer()).get();
+        OrderStatus orderStatus = orderStatusRepository.findById(3).get();
+        billPayment.get().setOrderStatus(orderStatus);
+        billPaymentRepository.save(billPayment.get());
+        Notify notify = new Notify();
+        notify.setDescription("Đơn hàng của bạn đã giao thành công. Vui lòng để lại bình luận sau khi trải nghiệm sản phẩm.");
+        notify.setUser(user);
+        notifyRepository.save(notify);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đơn hàng đã chuyển thành công",""));
+    }
+
     @PostMapping(value = "paymentManual")
     ResponseEntity<ApiResponse> paymentManual(@RequestParam long orderDetailID,
                                               @RequestParam String fullName,
@@ -210,16 +266,18 @@ private TransactionVNPayRepository transactionVNPayRepository;
                     .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Lỗi xử lý đơn hàng"));
         }
         BillPayment billPayment = new BillPayment();
+        ProductOfStore productOfStore = orderDetail.get().getProductOfStore();
+        productOfStore.setSold(productOfStore.getSold() + orderDetail.get().getQuantity());
+        iProductOfStoreService.Save(productOfStore);
         OrderStatus orderStatus = orderStatusRepository.findById(2).get();
         billPayment.setOrderStatus(orderStatus);
-        billPayment.setPayment(false);
         billPayment.setOrderID(orderDetailID);
         billPayment.setFullName(fullName);
         billPayment.setPhone(phoneNumber);
         billPayment.setAddress(address);
         billPaymentRepository.save(billPayment);
         orderService.initTransactionPaymentVNPay(orderDetail.get());
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đơn hàng đã được vận chuyển",""));
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đơn hàng đã được thanh toán VNPay thành công",""));
     }
     @PostMapping(value = "/buy-now")
     public ResponseEntity<ApiResponse> buyNow(@RequestParam long productOSID,
@@ -287,5 +345,9 @@ private TransactionVNPayRepository transactionVNPayRepository;
             throw new RuntimeException("Không tìm thấy phương thức thanh toán!");
         }
         return paymentMethod.get();
+    }
+    boolean billPaymentOfStore(OrderDetail orderDetail){
+        String emailManager = getEmailCustomer();
+        return orderDetail.getProductOfStore().getStore().getEmail_manager().equals(emailManager);
     }
 }

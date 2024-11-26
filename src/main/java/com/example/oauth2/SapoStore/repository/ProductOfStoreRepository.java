@@ -14,7 +14,13 @@ import java.util.UUID;
 
 @Repository
 public interface ProductOfStoreRepository extends JpaRepository<ProductOfStore,Long> {
-    Page<ProductOfStore> findAll(Pageable pageable);
+//    Page<ProductOfStore> findAll(Pageable pageable);
+@Query("""
+    SELECT o FROM productofstore o 
+    ORDER BY (0.01 * o.view) + (0.3 * o.evaluate / 5) + (0.02 * o.sold) DESC
+""")
+Page<ProductOfStore> findAllSorted(Pageable pageable);
+
     @Query("select o from productofstore o where o.store.storeCode=:storeCode")
     Page<ProductOfStore> findProductByStore(String storeCode, Pageable pageable);
     @Query("select o from productofstore o where o.store.storeCode=:storeCode and o.product.category.slug=:slug")

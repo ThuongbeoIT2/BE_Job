@@ -22,6 +22,7 @@ public class Product {
     @Column(nullable = false)
     private String thumbnail;
     private String description;
+    private boolean isHotSale = true;
     @ManyToOne
     @JoinColumn(name = "cateId",foreignKey = @ForeignKey(name = "fk_category_product"))
     private Category category;

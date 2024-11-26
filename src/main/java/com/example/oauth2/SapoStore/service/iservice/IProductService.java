@@ -1,6 +1,7 @@
 package com.example.oauth2.SapoStore.service.iservice;
 
 import com.example.oauth2.SapoStore.model.Product;
+import com.example.oauth2.SapoStore.page.SapoPageRequest;
 import com.example.oauth2.SapoStore.payload.reponse.ProductResponse;
 import com.example.oauth2.SapoStore.payload.request.ProductRequest;
 import org.springframework.data.domain.Page;
@@ -22,4 +23,6 @@ public interface IProductService {
     void Delete(Product product);
     void insert(ProductRequest productRequest);
     void update(ProductRequest productRequest, Product product);
+
+    Page<ProductResponse> getHotSale(SapoPageRequest sapoPageRequest);
 }

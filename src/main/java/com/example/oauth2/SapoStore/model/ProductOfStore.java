@@ -26,8 +26,10 @@ public class ProductOfStore {
     private long view;
     private int quantity;
     private double evaluate;
+    private int sold=0;
     private boolean status;
     private String description;
+
     @OneToMany
     private List<OrderDetail> orderDetails;
     @ManyToOne

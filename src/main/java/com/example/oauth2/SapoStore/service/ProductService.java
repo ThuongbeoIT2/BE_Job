@@ -2,6 +2,7 @@ package com.example.oauth2.SapoStore.service;
 
 import com.example.oauth2.SapoStore.model.Category;
 import com.example.oauth2.SapoStore.model.Product;
+import com.example.oauth2.SapoStore.page.SapoPageRequest;
 import com.example.oauth2.SapoStore.payload.reponse.ProductResponse;
 import com.example.oauth2.SapoStore.payload.request.ProductRequest;
 import com.example.oauth2.SapoStore.repository.CategoryRepository;
@@ -86,6 +87,12 @@ public class ProductService implements IProductService {
         product.setCategory(findCategoryBySlug(productRequest.getCategory()));
         productRepository.save(product);
     }
+
+    @Override
+    public Page<ProductResponse> getHotSale(SapoPageRequest sapoPageRequest) {
+        return productRepository.getHotSales(sapoPageRequest).map(ProductResponse::cloneFromProduct);
+    }
+
     private Category findCategoryBySlug(String category) {
         return   categoryRepository.findCategoriesBySlug(category);
     }
