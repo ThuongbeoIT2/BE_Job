@@ -31,7 +31,7 @@ public class BillPaymentResponse {
         clonedResponse.setPayment(billPayment.isPayment());
         clonedResponse.setAddress(billPayment.getAddress());
         clonedResponse.setTransID(billPayment.getTransID());
-        clonedResponse.setPaymentMethod(billPayment.getPaymentMethod().toString()); // Assuming PaymentMethod is an enum
+        clonedResponse.setPaymentMethod(billPayment.getPaymentMethod().getMethod()); // Assuming PaymentMethod is an enum
         clonedResponse.setOrderStatus(billPayment.getOrderStatus().getStatusId()); // Assuming OrderStatus is an object
         return clonedResponse;
     }

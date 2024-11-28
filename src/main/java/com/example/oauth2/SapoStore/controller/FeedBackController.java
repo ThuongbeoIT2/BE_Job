@@ -3,11 +3,12 @@ package com.example.oauth2.SapoStore.controller;
 import com.cloudinary.Cloudinary;
 import com.example.oauth2.SapoStore.model.Comment;
 import com.example.oauth2.SapoStore.model.OrderDetail;
+import com.example.oauth2.SapoStore.model.Store;
 import com.example.oauth2.SapoStore.page.SapoPageRequest;
 import com.example.oauth2.SapoStore.payload.reponse.CommentResponse;
 import com.example.oauth2.SapoStore.repository.CommentRepository;
 import com.example.oauth2.SapoStore.repository.OrderDetailRepository;
-import com.example.oauth2.SapoStore.repository.ProductOfStoreRepository;
+import com.example.oauth2.SapoStore.repository.StoreRepository;
 import com.example.oauth2.globalContanst.GlobalConstant;
 import com.example.oauth2.payload.ApiResponse;
 import com.example.oauth2.util.ProcessUtils;
@@ -30,6 +31,8 @@ import java.util.Optional;
 public class FeedBackController {
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private StoreRepository storeRepository;
     @Autowired
     private OrderDetailRepository orderDetailRepository;
     @GetMapping(value = "/get-all")
@@ -62,6 +65,25 @@ public class FeedBackController {
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
 
+    @PostMapping(value = "/toggle-comment-display")
+    public ResponseEntity<ApiResponse> toggleCommentDisplay(
+            @RequestParam long commentId,
+            @RequestParam boolean isDisplay,
+            @RequestParam String storeCode) {
+
+        Optional<Comment> commentOptional = commentRepository.findById(commentId);
+        Optional<Store> store = storeRepository.findStoreByCode(storeCode);
+        if (commentOptional.isEmpty() || store.isEmpty() || store.get().getEmail_manager().equalsIgnoreCase(getEmailCustomer())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("FAIL", GlobalConstant.ResultResponse.FAILURE, "Comment không tồn tại."));
+        }
+        Comment comment = commentOptional.get();
+        comment.setDisplay(isDisplay);
+        commentRepository.save(comment);
+        String message = isDisplay ? "Comment đã được hiển thị." : "Comment đã được ẩn.";
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, message));
+    }
     @Autowired
     private Cloudinary cloudinary;
     public Map upload(MultipartFile file) {

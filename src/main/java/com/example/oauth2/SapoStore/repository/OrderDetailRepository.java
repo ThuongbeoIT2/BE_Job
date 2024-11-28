@@ -7,13 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
     Page<OrderDetail> findAll(Pageable pageable);
-    @Query("select o from orderdetail o where o.productOfStore.store.storeCode=:storeCode")
+    @Query("select o from orderdetail o where o.productOfStore.store.storeCode=:storeCode and o.initOrderStatus ='SUCCESS'")
     Page<OrderDetail> getOrderDetailByStore(String storeCode,Pageable pageable);
     @Query("select o from orderdetail  o where o.productOfStore.id=:id and o.productOfStore.store.storeCode=:storeCode order by o.createdAt desc")
     Page<OrderDetail> getOrderDetailByProduct(long id,Pageable pageable,String storeCode);
@@ -23,8 +24,9 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
     Optional<OrderDetail> getProductOSByUser(long productOSID, String emailCustomer);
     @Query("SELECT sum(o.price_total) from orderdetail o WHERE o.initOrderStatus ='SUCCESS' ")
     long getRevenue();
-    @Query("SELECT sum(o.price_total) from orderdetail o WHERE o.initOrderStatus ='SUCCESS' ")
-    long getRevenueGroupByProduct();
-    @Query("SELECT sum(o.price_total) from orderdetail o WHERE o.initOrderStatus ='SUCCESS' and o.productOfStore.store=:storeCode")
-    long getRevenueWithStore(String storeCode);
+    @Query("SELECT sum(o.price_total) from orderdetail o WHERE o.initOrderStatus ='SUCCESS' and o.productOfStore.store=:storeCode ")
+    long getRevenueStore(String storeCode);
+    @Query("SELECT o from orderdetail o WHERE o.initOrderStatus ='SUCCESS' and o.productOfStore.store=:storeCode  ")
+    List<OrderDetail> getOrderOfStore(String storeCode);
+
 }

@@ -2,6 +2,8 @@ package com.example.oauth2.SapoStore.controller;
 
 import com.example.oauth2.SapoStore.exception.NotFoundObjectException;
 import com.example.oauth2.SapoStore.model.*;
+import com.example.oauth2.SapoStore.page.SapoPageRequest;
+import com.example.oauth2.SapoStore.payload.reponse.BillPaymentResponse;
 import com.example.oauth2.SapoStore.payload.reponse.OrderDetailResponse;
 import com.example.oauth2.SapoStore.repository.*;
 import com.example.oauth2.SapoStore.service.OrderService;
@@ -17,6 +19,7 @@ import com.example.oauth2.vnpay.VNPayService;
 import org.checkerframework.checker.units.qual.A;
 import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,6 +62,15 @@ private TransactionVNPayRepository transactionVNPayRepository;
     ResponseEntity<ApiResponse> getOrderDetailInMyCart(){
         List<OrderDetailResponse> orderDetailResponses = iOrderDetailService.getOrderDetailByUser();
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS,orderDetailResponses));
+
+    }
+    @PostMapping(value = "/store/order")
+    ResponseEntity<Page<OrderDetailResponse>> getOrderDetailInStore(@RequestParam String storeCode,
+                                                      @RequestParam(defaultValue = "0") int page){
+        SapoPageRequest sapoPageRequest = new SapoPageRequest(GlobalConstant.Value.PAGELIMIT, page * GlobalConstant.Value.PAGELIMIT);
+
+        Page<OrderDetailResponse> orderDetailResponses = iOrderDetailService.getOrderDetailByStore(storeCode,sapoPageRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(orderDetailResponses);
 
     }
     @PostMapping(value = "/add-to-cart")
@@ -327,6 +339,56 @@ private TransactionVNPayRepository transactionVNPayRepository;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Lỗi xử lý đơn hàng"));
         }).join();
+    }
+
+    @PostMapping(value = "/payment-bill/detail")
+    ResponseEntity<ApiResponse> getPaymentBillDetail(@RequestParam long orderId){
+        Optional<BillPayment> billPayment = billPaymentRepository.findByOrderID(orderId);
+        if (billPayment.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILD","FAILD","Không thể thực hiện thao tác"));
+        }
+        BillPaymentResponse billPaymentResponse = new BillPaymentResponse() ;
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Truy vấn thành công",billPaymentResponse.cloneFromBillPayment(billPayment.get())));
+
+    }
+
+    @PostMapping(value = "/order/cancel")
+    public ResponseEntity<ApiResponse> cancelOrder(@RequestParam long orderId) {
+        // Tìm OrderDetail theo orderId
+        Optional<OrderDetail> orderDetailOpt = orderDetailRepository.findById(orderId);
+
+        // Kiểm tra nếu OrderDetail không tồn tại
+        if (orderDetailOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Đơn hàng không tồn tại"));
+        }
+
+        OrderDetail orderDetail = orderDetailOpt.get();
+
+        // Kiểm tra OrderDetail có thuộc về email người dùng hiện tại hay không
+        String currentEmail = getEmailCustomer();
+        if (!orderDetail.getEmailCustomer().equalsIgnoreCase(currentEmail)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Không thể hủy đơn hàng không thuộc về bạn"));
+        }
+
+        // Lấy ProductOfStore liên quan
+        ProductOfStore productOfStore = orderDetail.getProductOfStore();
+        if (productOfStore == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Lỗi xử lý sản phẩm liên quan đến đơn hàng"));
+        }
+
+        // Cập nhật lại số lượng sản phẩm trong kho
+        productOfStore.setQuantity(productOfStore.getQuantity() + orderDetail.getQuantity());
+        iProductOfStoreService.Save(productOfStore);
+
+        // Xóa OrderDetail
+        orderDetailRepository.delete(orderDetail);
+
+        // Trả về phản hồi thành công
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, "Hủy đơn hàng thành công"));
     }
 
     public Optional<ProductOfStore> isProductOSExist(long productOSID){

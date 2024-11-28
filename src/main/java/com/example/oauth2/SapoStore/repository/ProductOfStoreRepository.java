@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,4 +33,6 @@ Page<ProductOfStore> findAllSorted(Pageable pageable);
     Optional<ProductOfStore> isExistProductOfStore(String slug, String storeCode);
     @Query("select o from productofstore o where o.product.slug=:slug")
     Page<ProductOfStore> getProductOfStoreBySlug(String slug, SapoPageRequest sapoPageRequest);
+    @Query("select o from productofstore o where o.store.storeCode=:storeCode")
+    List<ProductOfStore> findSizeProductByStore(String storeCode);
 }
