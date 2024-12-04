@@ -24,9 +24,9 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
     Optional<OrderDetail> getProductOSByUser(long productOSID, String emailCustomer);
     @Query("SELECT sum(o.price_total) from orderdetail o WHERE o.initOrderStatus ='SUCCESS' ")
     long getRevenue();
-    @Query("SELECT sum(o.price_total) from orderdetail o WHERE o.initOrderStatus ='SUCCESS' and o.productOfStore.store=:storeCode ")
+    @Query("SELECT sum(o.price_total) from orderdetail o WHERE o.initOrderStatus ='SUCCESS' and o.productOfStore.store.storeCode=:storeCode ")
     long getRevenueStore(String storeCode);
-    @Query("SELECT o from orderdetail o WHERE o.initOrderStatus ='SUCCESS' and o.productOfStore.store=:storeCode  ")
+    @Query("SELECT o from orderdetail o WHERE o.initOrderStatus ='SUCCESS' and o.productOfStore.store.storeCode=:storeCode  ")
     List<OrderDetail> getOrderOfStore(String storeCode);
 
 }

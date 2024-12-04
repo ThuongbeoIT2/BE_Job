@@ -1,14 +1,11 @@
 package com.example.oauth2.SapoStore.controller;
 
 import com.example.oauth2.SapoStore.exception.NotFoundObjectException;
-import com.example.oauth2.SapoStore.model.Product;
 import com.example.oauth2.SapoStore.model.Store;
 import com.example.oauth2.SapoStore.modelStatistical.AdminStatistical;
 import com.example.oauth2.SapoStore.modelStatistical.StoreStatistical;
 import com.example.oauth2.SapoStore.repository.*;
 import com.example.oauth2.globalContanst.GlobalConstant;
-import com.example.oauth2.model.User;
-import com.example.oauth2.payload.ApiResponse;
 import com.example.oauth2.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,11 +32,7 @@ public class StatisticalController {
     @Autowired
     private OrderDetailRepository orderDetailRepository;
     @Autowired
-    private TransactionVNPayRepository transactionVNPayRepository;
-    @Autowired
     private CommentRepository commentRepository;
-    @Autowired
-    private BillPaymentRepository billPaymentRepository;
 
     @GetMapping(value = "/admin/statistical")
     ResponseEntity<AdminStatistical> adminStatistical(){

@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface CommentRepository extends JpaRepository<Comment,Long> {
     @Query("select o from comment o where o.productOfStore.id=:productOSId order by o.createdAt desc ")
     Page<Comment> findFeedBackByProductId(long productOSId, SapoPageRequest sapoPageRequest);
-    @Query("select count(1) from comment o where o.productOfStore.store=:storeCode")
+    @Query("select count(1) from comment o where o.productOfStore.store.storeCode=:storeCode")
     int findFeedBackOfStore(String storeCode);
 }

@@ -2,6 +2,7 @@ package com.example.oauth2.SapoStore.repository;
 
 import com.example.oauth2.SapoStore.model.ProductOfStore;
 import com.example.oauth2.SapoStore.page.SapoPageRequest;
+import com.example.oauth2.SapoStore.payload.reponse.ProductOfStoreResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

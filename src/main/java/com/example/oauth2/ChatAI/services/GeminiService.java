@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -60,8 +61,8 @@ public class GeminiService {
             "storeName: String (Tên cửa hàng bán sản phẩm)  \n" +
             "storeCode: String (Mã cửa hàng)  \n" +
             "thumbnail: String (Đường dẫn hình ảnh thu nhỏ, mặc định là URL ảnh từ Cloudinary)\n";
-    private static final String API_KEY ="AIzaSyDoQ2Te_XGgB12biKBDd9Js3jXcKqOXMTU";
-//    @Scheduled(cron = "0 0 0 * * ?")
+    private static final String API_KEY ="AIzaSyDtLwUdAwtdAjjNrxZuuijzOzd_RGOO-10";
+    @Scheduled(cron = "0 0 0 * * ?")
     public  void loadData() {
         StringBuilder dataProduct = new StringBuilder();
         StringBuilder dataProductOS= new StringBuilder();
@@ -103,6 +104,7 @@ public class GeminiService {
                 "    priceI: 10000\n" +
                 "    discount: 10.0\n" +
                 "    CU: VND\n" +
+                "    sold: 130\n" +
                 "    view: 13\n" +
                 "    status: true\n" +
                 "    proName: Quạt điện to\n" +
@@ -114,13 +116,14 @@ public class GeminiService {
                 "    storeName: Duy Thuong\n" +
                 "    storeCode: SAPO235072\n" +
                 "    thumbnail: https://res.cloudinary.com/dqvr7kat6/image/upload/v1721289530/agbhiqut7wyrgpjcgxm9.jpg\n" +
-                "    -> Sản phẩm có tên là *Quạt điện to*, mô tả là *Quá nà đẹp với công suất lớn*, thuộc danh mục *Quạt*, thuộc cửa hàng *Duy Thuong*, có giá bán *11000 VND*, có lượt xem *13*.\n" +
+                "    -> Sản phẩm có tên là *Quạt điện to*, mô tả là *Quá nà đẹp với công suất lớn*, thuộc danh mục *Quạt*, thuộc cửa hàng *Duy Thuong*, có giá bán *11000 VND*, có lượt xem *13*, đã bán 130 lượt.\n" +
                 "    \n" +
-                "    Từ những ví dụ này, bạn sẽ tự động phân tích, đánh giá sản phẩm, và đưa ra gợi ý phù hợp cho khách hàng dựa trên dữ liệu có trong `dataSystem`. \n" +
+                "    Từ những ví dụ này, bạn sẽ tự động phân tích, đánh giá sản phẩm, và đưa ra gợi ý phù hợp, thông tin chi tiết sản phẩm cho khách hàng dựa trên dữ liệu có trong `dataSystem`. \n" +
                 "    Bạn không trả lời những thông tin không liên quan hoặc không cần thiết.\n" +
                 "    \n" +
                 "    Khi khách chào mình, bạn hãy chào lại bằng đúng ngôn ngữ mà khách sử dụng.\n" +
                 "\"\"\".formatted(dataSystem);\n"+
+                "Giới thiệu các phụ kiện, sản phẩm liên quan đến sản phẩm khách hàng tìm kiếm"+
                 "Khi khách chào mình thì mình chào lại bằng đúng ngôn ngữ đó ";
     }
 

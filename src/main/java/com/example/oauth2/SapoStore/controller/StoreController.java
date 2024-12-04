@@ -23,6 +23,7 @@ import com.example.oauth2.globalContanst.GlobalConstant;
 import com.example.oauth2.payload.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -136,8 +137,8 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK",GlobalConstant.ResultResponse.SUCCESS,""));
     }
 
-    @PostMapping(value = "/store/warningstore/{storeCode}")
-    ResponseEntity<ApiResponse> WarningStore(@PathVariable String storeCode,
+    @PostMapping(value = "/admin/warningstore")
+    ResponseEntity<ApiResponse> WarningStore(@RequestParam String storeCode,
                                         @RequestParam String email,
                                         @RequestParam String mesage) {
         Optional<Store> store = iStoreService.findStoreBystoreCode(storeCode);
@@ -148,8 +149,8 @@ public class StoreController {
         iStoreService.WarningStore(email,mesage);
         return ResponseEntity.ok(new ApiResponse("OK","OK",""));
     }
-    @PostMapping(value = "/admin/acpstore/{storeCode}")
-    ResponseEntity<ApiResponse> WarningStore(@PathVariable String storeCode) {
+    @PostMapping(value = "/admin/acpstore")
+    ResponseEntity<ApiResponse> ACPStore(@RequestParam String storeCode) {
         Optional<Store> store = iStoreService.findStoreBystoreCode(storeCode);
         if (store.isEmpty()) {
             throw new NotFoundObjectException(GlobalConstant.ObjectClass.STORE, GlobalConstant.ErrorCode.MER404);
@@ -202,13 +203,18 @@ public class StoreController {
         Page<ProductOfStoreResponse> productResponses = iProductOfStoreService.findProductOfStoreByStore(storeCode,sapoPageRequest);
         return ResponseEntity.ok(productResponses);
     }
+    @PostMapping(value = "/productOS/dasdboard")
+    ResponseEntity<Page<ProductOfStoreResponse>> getDashboardProductOS(@RequestParam(defaultValue = "0") int page){
+
+        SapoPageRequest sapoPageRequest = new SapoPageRequest(15, page * 15);
+        Page<ProductOfStoreResponse> productResponses = iProductOfStoreService.getProductOSSuggest(sapoPageRequest);
+        return ResponseEntity.ok(productResponses);
+    }
     @PostMapping(value = "/productOS/search")
     ResponseEntity<Page<ProductOfStoreResponse>> SearchListProductOfMyStore(@RequestParam String storeCode,
                                                                          @RequestParam String key,
                                                                          @RequestParam(defaultValue = "0") int page){
-
-
-        SapoPageRequest sapoPageRequest = new SapoPageRequest(GlobalConstant.Value.PAGELIMIT, page * GlobalConstant.Value.PAGELIMIT);
+        SapoPageRequest sapoPageRequest = new SapoPageRequest(15, page * 15);
         Page<ProductOfStoreResponse> productResponses = iProductOfStoreService.searchProductOfStoreByKey(key,storeCode,sapoPageRequest);
         return ResponseEntity.ok(productResponses);
     }
@@ -275,7 +281,6 @@ public class StoreController {
                                                   @RequestParam String description,
                                                   @PathVariable Long id
     ){
-
 
         String email = getEmailAuthentication();
         Store store= isManagerStore(storeCode,email);;

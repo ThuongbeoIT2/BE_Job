@@ -384,7 +384,8 @@ private TransactionVNPayRepository transactionVNPayRepository;
         iProductOfStoreService.Save(productOfStore);
 
         // Xóa OrderDetail
-        orderDetailRepository.delete(orderDetail);
+        orderDetail.setDelete(true);
+        orderDetailRepository.save(orderDetail);
 
         // Trả về phản hồi thành công
         return ResponseEntity.status(HttpStatus.OK)

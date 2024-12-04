@@ -35,4 +35,6 @@ public interface IProductOfStoreService {
     void enable(ProductOfStore productOfStore);
     void softDelete(ProductOfStore productOfStore);
     Page<ProductOfStoreResponse> getListProductOfStoreBySlug(String slug, SapoPageRequest sapoPageRequest);
+
+    Page<ProductOfStoreResponse> getProductOSSuggest(Pageable pageable);
 }

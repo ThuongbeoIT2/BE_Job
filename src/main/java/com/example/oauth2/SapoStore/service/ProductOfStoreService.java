@@ -157,4 +157,9 @@ public class ProductOfStoreService implements IProductOfStoreService {
     public Page<ProductOfStoreResponse> getListProductOfStoreBySlug(String slug, SapoPageRequest sapoPageRequest) {
         return productOfStoreRepository.getProductOfStoreBySlug(slug,sapoPageRequest).map(ProductOfStoreResponse::cloneFromProductOfStore);
     }
+
+    @Override
+    public Page<ProductOfStoreResponse> getProductOSSuggest(Pageable pageable) {
+        return productOfStoreRepository.findAllSorted(pageable).map(ProductOfStoreResponse::cloneFromProductOfStore);
+    }
 }
