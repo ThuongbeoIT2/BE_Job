@@ -28,7 +28,7 @@ public class ProductOfStoreResponse {
     private String category;
     private String storeName;
     private String storeCode;
-    private String thumbnail="https://res.cloudinary.com/dqvr7kat6/image/upload/v1721289530/agbhiqut7wyrgpjcgxm9.jpg";
+    private String thumbnail;
 
     @Override
     public String toString() {
@@ -41,9 +41,8 @@ public class ProductOfStoreResponse {
         productOfStoreResponse.setPriceO(productOfStore.getPriceO());
         productOfStoreResponse.setDiscount(productOfStore.getDiscount());
         productOfStoreResponse.setCU("VND");
+        productOfStoreResponse.setThumbnail(productOfStore.getProduct().getThumbnail());
         productOfStoreResponse.setSold(productOfStore.getSold());
-//        ProductOfStoreImage productOfStoreImage = productOfStore.getProductOfStoreImages().get(0);
-//        productOfStoreResponse.setThumbnail(productOfStoreImage.getUrlImage());
         productOfStoreResponse.setPriceI(productOfStore.getPriceI());
         productOfStoreResponse.setDescription(productOfStore.getDescription());
         productOfStoreResponse.setView(productOfStore.getView());

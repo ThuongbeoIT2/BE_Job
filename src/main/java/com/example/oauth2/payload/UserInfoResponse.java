@@ -27,6 +27,7 @@ public class UserInfoResponse {
 
     private String providerId;
     private String phoneNumber;
+    private int  role;
     private String address;
 
     public UserInfoResponse(User user) {
@@ -37,6 +38,7 @@ public class UserInfoResponse {
         this.emailVerified = user.getEmailVerified();
         this.provider = user.getProvider();
         this.providerId = user.getProviderId();
+        this.role = user.getRoles().size();
         this.address=user.getAddress();
         this.phoneNumber=user.getPhoneNumber();
     }

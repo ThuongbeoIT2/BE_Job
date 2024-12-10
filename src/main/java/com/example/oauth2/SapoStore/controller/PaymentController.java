@@ -127,7 +127,7 @@ private TransactionVNPayRepository transactionVNPayRepository;
     public ResponseEntity<ApiResponse> getOrderById(@RequestParam long orderId) {
         Optional<OrderDetail> orderDetail = orderDetailRepository.findById(orderId);
         String emailCustomer = getEmailCustomer();
-        if (orderDetail.isPresent() && orderDetail.get().getEmailCustomer().equals(emailCustomer) ) {
+        if (orderDetail.isPresent() && orderDetail.get().getEmailCustomer().equals(emailCustomer) || orderDetail.get().getProductOfStore().getStore().getEmail_manager().equals(emailCustomer) ) {
             // Convert OrderDetail to OrderDetailResponse if needed
             OrderDetailResponse orderDetailResponse = OrderDetailResponse.cloneFromOrderDetail(orderDetail.get());
             return ResponseEntity.status(HttpStatus.OK)
@@ -162,6 +162,11 @@ private TransactionVNPayRepository transactionVNPayRepository;
                 return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
                         .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Hết hàng"));
             }
+            BillPayment billPayment = new BillPayment();
+            billPayment.setOrderID(orderDetailQueue.getId());
+            billPayment.setOrderStatus(orderStatusRepository.findById(1).get());
+            billPayment.setPaymentMethod(paymentMethodRepository.findById(2).get());
+            billPaymentRepository.save(billPayment);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, orderDetailID));
         }).exceptionally(ex -> {
@@ -195,17 +200,17 @@ private TransactionVNPayRepository transactionVNPayRepository;
                         .body(new ApiResponse("NOT_IMPLEMENTED", GlobalConstant.ResultResponse.FAILURE, "Đơn hàng đã được thanh toán"));
             }
             if (billPaymentO.isEmpty()){
-                BillPayment billPayment = new BillPayment();
-                OrderStatus orderStatus = orderStatusRepository.findById(2).get();
-                billPayment.setOrderStatus(orderStatus);
-                billPayment.setPayment(false);
-                billPayment.setOrderID(orderDetailID);
-                billPayment.setFullName(fullName);
-                billPayment.setPhone(phoneNumber);
-                billPayment.setAddress(address);
-                billPaymentRepository.save(billPayment);
+                return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+                        .body(new ApiResponse("NOT_IMPLEMENTED", GlobalConstant.ResultResponse.FAILURE, "Đơn hàng không tồn tại"));
             }
 
+        BillPayment billPayment = billPaymentO.get();
+        billPayment.setPayment(false);
+        billPayment.setOrderID(orderDetailID);
+        billPayment.setFullName(fullName);
+        billPayment.setPhone(phoneNumber);
+        billPayment.setAddress(address);
+        billPaymentRepository.save(billPayment);
             orderService.initTransactionPaymentVNPay(orderDetail.get());
             String redirectUrl = vnPayService.createOrder(
                     (int) orderDetail.get().getPrice_total(),
@@ -277,7 +282,7 @@ private TransactionVNPayRepository transactionVNPayRepository;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Lỗi xử lý đơn hàng"));
         }
-        BillPayment billPayment = new BillPayment();
+        BillPayment billPayment = billPaymentRepository.findByOrderID(orderDetailID).get();
         ProductOfStore productOfStore = orderDetail.get().getProductOfStore();
         productOfStore.setSold(productOfStore.getSold() + orderDetail.get().getQuantity());
         iProductOfStoreService.Save(productOfStore);
@@ -331,7 +336,11 @@ private TransactionVNPayRepository transactionVNPayRepository;
                 return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
                         .body(new ApiResponse("FAILED", GlobalConstant.ResultResponse.FAILURE, "Hết hàng"));
             }
-
+            BillPayment billPayment = new BillPayment();
+            billPayment.setOrderStatus(orderStatusRepository.findById(1).get());
+            billPayment.setOrderID(orderDetailQueue.getId());
+            billPayment.setPaymentMethod(paymentMethodRepository.findById(2).get());
+            billPaymentRepository.save(billPayment);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ApiResponse("OK", GlobalConstant.ResultResponse.SUCCESS, orderDetailQueue.getId()));
         }).exceptionally(ex -> {
