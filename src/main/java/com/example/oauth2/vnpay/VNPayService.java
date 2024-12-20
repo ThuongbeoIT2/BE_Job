@@ -185,7 +185,7 @@ public class VNPayService {
         productOfStore.setSold(productOfStore.getSold()+ orderDetail.getQuantity());
         BillPayment billPayment= billPaymentRepository.findByOrderID(orderID).get();
         billPayment.setTransID(transactionVNPay.getTransID());
-        billPayment.setOrderStatus(orderStatusRepository.findById(1).get());
+        billPayment.setOrderStatus(orderStatusRepository.findById(2).get());
         billPayment.setPayment(true);
         PaymentMethod paymentMethod = paymentMethodRepository.findById(1).get();
         billPayment.setPaymentMethod(paymentMethod);

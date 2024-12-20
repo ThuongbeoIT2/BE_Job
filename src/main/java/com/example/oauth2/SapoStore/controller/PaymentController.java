@@ -16,8 +16,6 @@ import com.example.oauth2.notify.NotifyRepository;
 import com.example.oauth2.payload.ApiResponse;
 import com.example.oauth2.repository.UserRepository;
 import com.example.oauth2.vnpay.VNPayService;
-import org.checkerframework.checker.units.qual.A;
-import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -239,16 +237,14 @@ private TransactionVNPayRepository transactionVNPayRepository;
         billPayment.get().setPayment(true);
 
         orderDetail.setIsPayment("1");
-        OrderStatus orderStatus = orderStatusRepository.findById(2).get();
-        billPayment.get().setOrderStatus(orderStatus);
         orderDetailRepository.save(orderDetail);
         billPaymentRepository.save(billPayment.get());
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đơn hàng đã được vận chuyển",""));
     }
 
     @PostMapping(value = "/shipper/complete")
-    ResponseEntity<ApiResponse> orderComplete(@RequestParam long billID){
-        Optional<BillPayment> billPayment = billPaymentRepository.findById(billID);
+    ResponseEntity<ApiResponse> orderComplete(@RequestParam long orderID){
+        Optional<BillPayment> billPayment = billPaymentRepository.findByOrderID(orderID);
         if (billPayment.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILD","NOT_IMPLEMENTED",""));
         }
@@ -256,14 +252,10 @@ private TransactionVNPayRepository transactionVNPayRepository;
         if (!billPaymentOfStore(orderDetail)){
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ApiResponse("FAILD","NOT_IMPLEMENTED",""));
         }
-        User user = userRepository.findByEmail(orderDetail.getEmailCustomer()).get();
+
         OrderStatus orderStatus = orderStatusRepository.findById(3).get();
         billPayment.get().setOrderStatus(orderStatus);
         billPaymentRepository.save(billPayment.get());
-        Notify notify = new Notify();
-        notify.setDescription("Đơn hàng của bạn đã giao thành công. Vui lòng để lại bình luận sau khi trải nghiệm sản phẩm.");
-        notify.setUser(user);
-        notifyRepository.save(notify);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("OK","Đơn hàng đã chuyển thành công",""));
     }
 
